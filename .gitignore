@@ -2,12 +2,9 @@
 /.quarto/
 **/*.quarto_ipynb
 
-# Rendered output.  It lands in the bundle root (see output-dir in
-# _quarto.yml), so it is listed file by file rather than as one directory.
-/*.html
-/*_files/
-/site_libs/
-/search.json
+# Rendered output (see output-dir in _quarto.yml).  Published to the gh-pages
+# branch by CI rather than tracked here.
+/_book/
 
 # NOT ignored on purpose: /_freeze/ ships, so the book renders without
 # refitting any models.  See the note in _quarto.yml.

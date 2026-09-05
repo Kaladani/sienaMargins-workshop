@@ -1,9 +1,11 @@
 project:
   type: book
-  # The book renders into the bundle root rather than into _book/, so that
-  # someone who opens this folder finds index.html at the top level instead of
-  # having to know to look inside a directory named with a leading underscore.
-  output-dir: .
+  # Rendered output goes in its own directory.  It has to: `quarto publish`
+  # copies the output directory into a worktree under .quarto/, which is
+  # impossible if the output directory *is* the project root.  Readers reach the
+  # book through the published site rather than by opening this folder, so
+  # nothing is lost by keeping the rendered files out of the way.
+  output-dir: _book
   # Chapters keep their own working directory, which for this bundle is the
   # workshop/ folder itself.  The scripts in scripts/ assume the same.
   execute-dir: file
