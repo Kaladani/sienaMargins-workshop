@@ -1,0 +1,686 @@
+---
+title: "Interpreting a SAOM"
+subtitle: "From coefficients to probabilities, one decision at a time"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    df-print: kable
+execute:
+  warning: false
+  message: false
+---
+
+## Setup — run once
+
+Everything here needs the `sienaMargins` branch of RSiena, which is where
+`predict()` and `marginalEffects()` live, plus `ggplot2` for the figures.
+
+**These chunks do not run when the document is rendered.** Run whichever one
+matches your setup by hand, then restart R.
+
+```{r install}
+#| eval: false
+install.packages(c("remotes", "ggplot2"))
+remotes::install_github("stocnet/rsiena@sienaMargins")
+```
+
+If you keep this project's dependencies in `renv` instead:
+
+```{r install-renv}
+#| eval: false
+install.packages("renv")
+renv::install(c("stocnet/rsiena@sienaMargins", "ggplot2"))
+```
+
+Check that it worked — `predict()` needs to accept a targets object:
+
+```{r check}
+#| eval: false
+packageVersion("RSiena")
+library("RSiena")
+exists("make_predict_targets")   # TRUE on the sienaMargins branch
+```
+
+Afterwards we can setup 
+
+```{r setup}
+#| include: false
+library(RSiena)
+library(ggplot2)
+set.seed(42)
+theme_set(theme_minimal(base_size = 12))
+CRE <- "#2166ac"   # creation
+MNT <- "#d73027"   # maintenance
+```
+
+## The model we are trying to interpret
+
+Take the `s50` data that ships with RSiena: 50 pupils, three waves of friendship
+nominations, plus smoking and drinking. Two actor covariates, so the model has
+both kinds of effect — structural effects belonging to a single alternative, and
+covariate effects that move an actor's whole choice set at once.
+
+```{r fit}
+mynet   <- as_dependent_rsiena(array(c(s501, s502, s503), dim = c(50, 50, 3)))
+smoke   <- as_covariate_rsiena(s50s[, 1])
+alcohol <- as_covariate_rsiena(s50a[, 1])
+mydata  <- make_data_rsiena(mynet, smoke, alcohol)
+
+myeff <- make_specification(mydata)
+myeff <- set_effect(myeff, transTrip1, verbose = FALSE)
+myeff <- set_effect(myeff, egoX, covar1 = "smoke",   verbose = FALSE)
+myeff <- set_effect(myeff, egoX, covar1 = "alcohol", verbose = FALSE)
+myeff <- set_effect(myeff, altX, covar1 = "alcohol", verbose = FALSE)
+
+## A user-specified interaction of reciprocity and transitivity.  Its change
+## statistic is the product of the two components' -- which matters in Step 8.
+myeff <- set_interaction(myeff, c(recip, transTrip1), verbose = FALSE)
+
+myalgo <- set_algorithm_saom(cond = FALSE, n3 = 1000, seed = 42)
+ans <- siena(data = mydata, effects = myeff, control_algo = myalgo,
+             batch = TRUE, verbose = FALSE)
+```
+
+
+```{r coefs}
+data.frame(effect   = names(coef(ans)),
+           estimate = round(coef(ans), 3),
+           SE       = round(sqrt(diag(vcov(ans))), 3),
+           row.names = NULL)
+```
+
+Reciprocity is large and positive. **But how large?** The coefficient is a
+change in a log-odds inside a choice among 50 alternatives. It is not a
+probability, not a rate, and not easily comparable to the reciprocity coefficient of
+another model on another network.
+
+This document walks from that coefficient to quantities that are (more so).
+
+## Step 1 — the descriptive difference
+
+Three simple statistics we can count directly between two observed waves, with no model.
+
+```{r descriptives}
+as_tie <- function(m) { m[m == 10] <- NA; diag(m) <- NA; m }
+x1 <- as_tie(s501); x2 <- as_tie(s502)
+ok <- !is.na(x1) & !is.na(x2)
+
+p_rec <- mean(x2[ok & t(x1) == 1] == 1)
+p_not <- mean(x2[ok & t(x1) == 0] == 1)
+
+data.frame(
+  quantity = c("tie creation (non-ties at t1 that appear)",
+               "tie maintenance (ties at t1 that survive)",
+               "P(tie at t2 | reciprocated at t1)",
+               "P(tie at t2 | not reciprocated at t1)",
+               "descriptive difference in probability"),
+  value = round(c(mean(x2[ok & x1 == 0] == 1),
+                  mean(x2[ok & x1 == 1] == 1),
+                  p_rec, p_not, p_rec - p_not), 3))
+```
+
+The last row is the **descriptive difference in probability**: are ties more prevalent where
+the condition holds? Any researcher can compute it directly from two waves.
+
+It is also a gap that reflects **all mechanisms at once**. Dyads that reciprocate
+are also more transitively embedded, and involve pupils who differ in other ways.
+Nothing here separates a reciprocity mechanism from any of that.
+
+Note too how different tie creation and tie maintenance are. Hold on to that.
+
+## Step 2 — what the model sees
+
+Before asking the model anything, it is worth looking at what it works from. The
+**change statistics** describe every alternative open to every actor: one row per
+ego–alter pair.
+
+```{r change-stats}
+cs <- getChangeStatistics(ans, mydata, effects = myeff, depvar = "mynet")
+
+head(cs[cs$ego != cs$choice, ], 4)
+```
+
+Each row says: is this alternative reciprocated, how many two-paths does it have,
+do the two pupils drink alike - equivalently how much would the effect statistic
+differ if the tie to that alternative would exist vs if it would not exist. 
+The `mynet_recip` column at period 1 is exactly the condition from Step 1 — 
+so the descriptive difference can be recomputed from it, without the matrix algebra:
+
+```{r descr-from-cs}
+p1 <- cs[cs$period == 1 & cs$ego != cs$choice, ]
+tie2 <- as_tie(s502)[cbind(p1$ego, p1$choice)]      # was there a tie at wave 2?
+
+c(reciprocated     = mean(tie2[p1$mynet_recip == 1] == 1, na.rm = TRUE),
+  not_reciprocated = mean(tie2[p1$mynet_recip == 0] == 1, na.rm = TRUE))
+```
+
+The same two numbers as Step 1. That is the point: the condition you can count by
+hand and the condition the model conditions on are the same column. Everything
+from here on splits these rows in different ways.
+
+::: {.callout-note collapse="true"}
+## Change statistics and toggle statistics differ in sign
+The toggle statistic of Chapter 2 is what `flip = FALSE` returns, under the name
+*change contribution*:
+
+```{r contributions}
+cc <- getChangeStatistics(ans, mydata, effects = myeff, depvar = "mynet",
+                          flip = FALSE)
+
+## an existing tie that is also reciprocated, so the difference is visible
+i    <- which(cs$mynet_density == -1 & cs$mynet_recip == 1)[1]
+cols <- c("mynet_density", "mynet_recip", "mynet_transTrip1")
+
+rbind(`change statistic`    = cs[i, cols],
+      `toggle statistic` = setNames(cc[i, paste0(cols, "_eval")], cols))
+```
+
+Remember the distinction: the **toggle statistic** is what toggling would *do*, so
+dropping a reciprocated tie loses the reciprocity and it comes out negative. The
+**change statistic** is the same information as a property of the alternative —
+this alter *does* nominate ego, so it is positive. Conditioning uses the change
+statistic, which is why "condition on `recip`" means "is the reverse tie there",
+not "what would toggling do".
+
+Density is the exception: it is left on the toggle scale in both, so that its
+`+1` / `-1` marks the direction of the decision. As a change statistic it would be
+`+1` throughout, since a tie adds one to density whichever way the decision runs —
+which would be true but useless for telling creation from maintenance.
+
+These describe ego–alter pairs, which is what we want here. They can also be
+added up into ordinary network descriptives — the rows with `density == -1` are
+the ties that exist, so:
+
+```{r recip-index}
+ties <- p1[p1$mynet_density == -1, ]
+
+c(ties              = nrow(ties),
+  reciprocated      = sum(ties$mynet_recip),
+  reciprocity_index = round(mean(ties$mynet_recip), 3))
+```
+
+which is the wave-1 network's reciprocity index, computed without touching the
+adjacency matrix. This works for effects that are linear in the focal tie. It
+does **not** work for transitivity, where one tie takes part in several triplets
+and so would be counted more than once.
+:::
+
+## Aside — the same statistics along simulated ministeps
+
+The observed waves are only the starting points. `dynamic = TRUE` returns the
+change statistics along the model's own simulated ministep sequences, with
+`chain` and `ministep` columns added:
+
+```{r dynamic-cs}
+dyn <- getChangeStatistics(ans, mydata, effects = myeff, depvar = "mynet",
+                           dynamic = TRUE, algorithm = myalgo, n3 = 4)
+
+dim(dyn)
+head(dyn[, c("chain", "ministep", "ego", "choice", "mynet_recip")], 3)
+```
+
+Four chains already give over a hundred thousand rows. Do the decision
+situations drift much as a chain runs?
+
+```{r drift-plot}
+#| fig-width: 8
+#| fig-height: 3.2
+d1  <- dyn[dyn$period == 1, ]
+agg <- aggregate(cbind(mynet_recip, mynet_transTrip1) ~ ministep, d1, FUN = mean)
+
+long <- rbind(
+  data.frame(ministep = agg$ministep, statistic = "reciprocated",
+             value = agg$mynet_recip),
+  data.frame(ministep = agg$ministep, statistic = "two-paths",
+             value = agg$mynet_transTrip1))
+
+ggplot(long, aes(ministep, value)) +
+  geom_point(alpha = 0.15, size = 0.6) +
+  geom_smooth(se = FALSE, colour = CRE, linewidth = 0.8) +
+  facet_wrap(~ statistic, scales = "free_y") +
+  labs(x = "ministep within the period",
+       y = "mean over the alternatives on offer")
+```
+
+Fairly flat: the mix of alternatives actors face does not change dramatically
+between the start and the end of a period here. That is reassuring for everything
+that follows, where the observed contexts stand in for the whole path — but it is a
+property of this network, not a guarantee, and worth checking when the network
+moves a lot.
+
+You can also keep the contributions from the fit itself, with
+`set_output_saom(returnChangeContributions = TRUE)` in `siena()`. That stores
+every ministep of every phase-3 simulation, so it grows with actors, effects and
+simulations and becomes expensive in memory for larger models. `predict()` and
+`marginalEffects()` reach the same quantities internally but re-simulate in
+batches, so you do not normally need to hold them all at once.
+
+## Step 3 — the same comparison inside the model
+
+The descriptive difference compares two *observed networks*. The SAOM does not
+model that jump directly. It models the process **between** the waves as a
+sequence of **ministeps**: one actor gets an opportunity, looks at every
+alternative open to it, and toggles one tie — creating a new one, or keeping or
+dropping one it has.
+
+So every quantity below sits at one ministep and asks: for this actor, facing
+this alternative, what happens next?
+
+`predict()` gives those probabilities. Because it works from the change
+statistics, we can split them by features of the decision situation.
+
+```{r predict}
+ptg <- make_predict_targets(ans, effects = myeff, depvar = "mynet",
+                            type = "tieProb", level = "period",
+                            includeDefaults = FALSE)
+ptg <- set_condition(ptg, recip,   name = "by_recip",   verbose = FALSE)
+ptg <- set_condition(ptg, density, name = "by_context", verbose = FALSE)
+ptg <- set_condition(ptg, c(density, recip), name = "by_both", verbose = FALSE)
+
+pred <- predict(ans, mydata, targets = ptg,
+                control_uncertainty = set_postest_uncertainty_saom(mode = "delta"))
+```
+
+These are tie probabilities — the probability the tie **exists** once the actor
+has taken its ministep — which is what `type = "tieProb"` asks for. Split by
+whether the reverse tie is already there:
+
+```{r by-recip}
+pred$by_recip
+```
+
+This is the Step 1 comparison again, now from the model and at the ministep
+rather than between two waves. It reflects **all mechanisms at once** in exactly
+the same way: nothing here holds the decision situation fixed.
+
+::: {.callout-note collapse="true"}
+## Which actors are being compared?
+Two separate things affect who enters these averages, and they are easy to run
+together.
+
+The first is already taken care of. Averaging is normalised per actor by default
+(`egoNormalize = TRUE`): each actor's alternatives are averaged first, and those
+per-actor values are then averaged. So a pupil with forty open alternatives does
+not count for more than one with five.
+
+The second is not. Conditioning on `recip` splits the rows into two strata, and
+each is averaged over the actors who *have* that kind of alternative — which is not
+the same set of pupils. Some have no reciprocated alternative at all, so they enter
+the `recip = 0` average only, and the gap subtracts two means taken over different
+people.
+
+Differencing inside each actor's own choice set first, and averaging only over
+actors with both kinds, avoids that. `level = "ego"` returns one value per actor
+per stratum, which is what makes it possible:
+
+```{r ego-level}
+etg <- make_predict_targets(ans, effects = myeff, depvar = "mynet",
+                            type = "tieProb", level = "ego",
+                            includeDefaults = FALSE)
+etg <- set_condition(etg, recip, name = "by_recip", verbose = FALSE)
+eg  <- as.data.frame(predict(ans, mydata, targets = etg,
+         control_uncertainty = set_postest_uncertainty_saom(enabled = FALSE)))
+
+pooled <- as.data.frame(pred$by_recip)
+
+do.call(rbind, lapply(sort(unique(eg$period)), function(pd) {
+  e   <- eg[eg$period == pd, ]
+  p   <- pooled[pooled$period == pd, ]
+
+  ## pupils who face both kinds of alternative in this period
+  tab  <- table(e$ego, e$mynet_recip)
+  both <- rownames(tab)[rowSums(tab > 0) == 2]
+  e    <- e[e$ego %in% both, ]
+
+  data.frame(period     = pd,
+             pupils     = nrow(tab),
+             with_both  = length(both),
+             pooled     = p$tieProb[p$mynet_recip == 1] -
+                          p$tieProb[p$mynet_recip == 0],
+             within_ego = mean(sapply(split(e, e$ego), function(d)
+                            d$tieProb[d$mynet_recip == 1] -
+                            d$tieProb[d$mynet_recip == 0])))
+}))
+```
+
+`with_both` is how many pupils the balanced version can use, and it changes between
+periods. The two figures agree to about a thousandth here, so nothing in Step 3
+turns on the choice — but that is a fact about this network, not a general one. It
+matters more when actors differ a lot in who is available to them.
+
+This only works for statistics that vary across an actor's alternatives.
+Ego's alcohol is the same for all of them, so that question can only be asked
+across actors.
+:::
+
+## Step 4 — creation and maintenance are different decisions
+
+The creation and maintenance margins are two different questions, and on the
+tie-probability scale they have very different answers: an existing tie is very
+likely to still be there after one ministep, an absent one very unlikely to have
+appeared. The `density` column tells the two apart — `+1` where the actor is
+deciding whether to create a tie, `-1` where the decision is whether to maintain
+one.
+
+```{r by-context}
+pred$by_context
+```
+
+Reciprocity is strongly associated with the tie already existing. So how much of
+the Step 3 gap is really "these dyads were already tied"?
+
+```{r by-both}
+## the reciprocity gap: P(tie | reciprocated) - P(tie | not reciprocated)
+gap <- function(d) d$tieProb[d$mynet_recip == 1] - d$tieProb[d$mynet_recip == 0]
+
+pooled <- as.data.frame(pred$by_recip)
+b <- as.data.frame(pred$by_both)
+b$decision <- ifelse(b$mynet_density > 0, "tie creation", "tie maintenance")
+
+## the same gap taken separately within each kind of decision
+gaps <- do.call(rbind, lapply(split(b, list(b$period, b$decision), drop = TRUE),
+  function(s) data.frame(period = s$period[1], decision = s$decision[1],
+                         reciprocity_gap = gap(s))))
+
+out <- rbind(do.call(rbind, lapply(split(pooled, pooled$period), function(s)
+               data.frame(period = s$period[1], decision = "unconditional",
+                          reciprocity_gap = gap(s)))),
+             gaps)
+out$reciprocity_gap <- round(out$reciprocity_gap, 3)
+out <- out[order(out$period), ]
+rownames(out) <- NULL
+out
+```
+
+Read the first row against the other two. Taking both kinds of decision together
+gives a **larger** gap than either kind on its own, so it is clearly not an
+average of them.
+
+The reason is that reciprocated and unreciprocated alternatives are not the same
+kind of decision. Where the reverse tie already exists, the tie itself usually
+exists too, so those are mostly maintenance decisions with a high probability.
+Where it does not, the tie usually does not exist either, so those are mostly
+creation decisions with a low probability. Comparing the two therefore compares
+existing ties against absent ones, with reciprocity varying alongside.
+
+Most of the apparent reciprocity gap in Step 3 was the state of the tie itself.
+
+## Step 5 — the adjusted effect
+
+Splitting by density accounts for one thing the comparison was picking up. The
+model contains others: transitivity, drinking, smoking, and the reciprocity ×
+transitivity interaction. A dyad that reciprocates is usually also more
+transitively embedded.
+
+To isolate reciprocity we hold the decision situation fixed: same actor, same
+alternative, every other statistic where it actually is, and only reciprocity
+switched from 0 to 1. That contrast is the **first difference**.
+
+One decision is not an answer, though, so the first differences are averaged
+over all the decision situations in the data. That average is the **average
+marginal effect**, usually shortened to **AME** — the standard name for "the
+effect of switching this on, averaged over everyone it could apply to". It is
+what the table below reports.
+
+```{r first-diff}
+mtg <- make_marginal_targets(ans, effects = myeff, depvar = "mynet",
+                             type = "tieProb", level = "period",
+                             condition = "density", includeDefaults = FALSE)
+mtg <- set_target(mtg, recip, contrast = c(0, 1), name = "recip_fd",
+                  verbose = FALSE)
+## Perturbing recip also moves the recip x transTrip1 interaction, because that
+## interaction's change statistic is the product of its components'.  Declared
+## once, applied wherever it is reached.
+mtg <- set_dependency(mtg, unspInt ~ recip:transTrip1, verbose = FALSE)
+
+fd <- marginalEffects(ans, mydata, targets = mtg,
+        control_uncertainty = set_postest_uncertainty_saom(mode = "delta"))
+fd
+```
+
+
+## Step 6 — how much the adjustment moves it
+
+Step 4 left three quantities in play: the unconditional gap, the gap within each
+kind of decision, and — from Step 5 — the adjusted first difference. The first was
+already shown to be an artefact of pooling two different decisions, so what is
+worth comparing is the last two, within each margin:
+
+```{r compare}
+f <- as.data.frame(fd)
+f$decision <- ifelse(f$mynet_density > 0, "tie creation", "tie maintenance")
+
+cmp <- merge(gaps, f[, c("period", "decision", "firstDiff")],
+             by = c("period", "decision"))
+
+data.frame(period     = cmp$period,
+           decision   = cmp$decision,
+           unadjusted = round(cmp$reciprocity_gap, 3),
+           adjusted   = round(cmp$firstDiff, 3))
+```
+
+Same model, same ministep, same probability scale. The two differ in one
+respect only: whether the decision situation is held fixed. So the difference
+between them is what the raw comparison was picking up from other mechanisms.
+
+It does not always point the same way. For tie creation the unadjusted
+comparison overstates reciprocity, as expected. For tie maintenance it
+*understates* it:
+the adjusted effect is larger. That is not a mistake. Mutual ties differ from
+asymmetric ties in more than reciprocity — they are also more transitively
+embedded, and the reciprocity × transitivity interaction here is negative, which
+holds their raw survival advantage down. Holding the decision situation fixed
+puts it back.
+
+Adjustment does not only ever shrink things.
+
+::: {.callout-important}
+## What not to compare directly
+The Step 1 descriptive difference is **period-level**: it compares two waves.
+The AME is **per-opportunity**: it refers to one ministep. They are not on the
+same footing, so the difference between them is not interpretable.
+
+Summing the contrast along the ministeps the model implies between one wave and
+the next does give a period-level quantity — the **accumulated effect** — but it
+is a cumulative count rather than a probability, so it does not simply close the
+gap either. Chapter 6 sets out what it does and does not support. For now, treat
+Step 1 as an anchor for intuition rather than as a number to subtract from.
+:::
+
+Everything above is evaluated at the **observed** waves. The model can instead
+average over its own **model-implied decision sequences** (`dynamic = TRUE`),
+which uses the whole simulated path between waves rather than only the observed
+states. Same functions, one extra argument.
+
+## Step 7 — effects are not constant
+
+An AME answers "how much, on average", and hides on whom and when. The
+underlying contrasts are **context-conditional** — they depend on the decision
+situation, and the average is only a summary of them. Stratifying on a feature
+of that situation gives a **conditional AME**: the same average, computed
+separately within each group of decisions, which shows the effect as a function
+of that feature.
+
+Here: what does one more two-path do, given how many are already there?
+
+```{r shape}
+stg <- make_marginal_targets(ans, effects = myeff, depvar = "mynet",
+                             type = "tieProb", level = "period",
+                             condition = c("density", "transTrip1"),
+                             includeDefaults = FALSE)
+stg <- set_target(stg, transTrip1, diff = 1, name = "tt", verbose = FALSE)
+stg <- set_dependency(stg, unspInt ~ recip:transTrip1, verbose = FALSE)
+
+shape <- as.data.frame(marginalEffects(ans, mydata, targets = stg,
+          control_uncertainty = set_postest_uncertainty_saom(mode = "delta")))
+shape <- shape[shape$mynet_density != 0, ]
+shape$context <- ifelse(shape$mynet_density > 0, "creation", "maintenance")
+```
+
+```{r shape-plot}
+#| fig-width: 9
+#| fig-height: 5
+ggplot(shape, aes(mynet_transTrip1, firstDiff, ymin = q_025, ymax = q_975,
+                  colour = context, fill = context)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_ribbon(alpha = 0.15, colour = NA) +
+  geom_line(linewidth = 0.7) + geom_point(size = 1.8) +
+  facet_grid(period ~ context, scales = "free_y", labeller = label_both) +
+  scale_colour_manual(values = c(creation = CRE, maintenance = MNT),
+                      guide = "none") +
+  scale_fill_manual(values = c(creation = CRE, maintenance = MNT),
+                    guide = "none") +
+  labs(x = "two-paths already present", y = "effect of one more two-path",
+       caption = "95% delta-method intervals")
+```
+
+Read it: is the line flat (a constant effect), rising (self-reinforcing), or
+falling (saturating)? And does it do the same in both panels? A single average
+tells you none of this — this is the nonlinear, context-dependent heterogeneity
+that the average is a summary of.
+
+The same idea with a binary feature: does reciprocity change what a two-path
+does?
+
+```{r mod}
+#| fig-width: 8
+#| fig-height: 4.5
+mtg2 <- make_marginal_targets(ans, effects = myeff, depvar = "mynet",
+                              type = "tieProb", level = "period",
+                              condition = c("density", "recip"),
+                              includeDefaults = FALSE)
+mtg2 <- set_target(mtg2, transTrip1, diff = 1, name = "tt", verbose = FALSE)
+mtg2 <- set_dependency(mtg2, unspInt ~ recip:transTrip1, verbose = FALSE)
+
+mod <- as.data.frame(marginalEffects(ans, mydata, targets = mtg2,
+        control_uncertainty = set_postest_uncertainty_saom(mode = "delta")))
+mod <- mod[mod$mynet_density != 0, ]
+mod$context <- ifelse(mod$mynet_density > 0, "creation", "maintenance")
+mod$recip   <- factor(mod$mynet_recip, levels = c(0, 1),
+                      labels = c("not reciprocated", "reciprocated"))
+
+ggplot(mod, aes(recip, firstDiff, ymin = q_025, ymax = q_975,
+                colour = context)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_pointrange() +
+  facet_grid(period ~ context, scales = "free_y", labeller = label_both) +
+  scale_colour_manual(values = c(creation = CRE, maintenance = MNT),
+                      guide = "none") +
+  labs(x = NULL, y = "effect of one more two-path")
+```
+
+## Step 8 — the interaction, as a second difference
+
+The plot above suggests the two-path effect differs by reciprocity. The
+**second difference** states that as one number with an interval: how much does
+the effect of one more two-path change when the tie goes from unreciprocated to
+reciprocated?
+
+```{r second-diff}
+sdt <- make_marginal_targets(ans, effects = myeff, depvar = "mynet",
+                             type = "tieProb", level = "period",
+                             condition = "density", includeDefaults = FALSE)
+sdt <- set_second_diff(sdt,
+                       list(transTrip1 = list(diff = 1),
+                            recip      = list(contrast = c(0, 1))),
+                       name = "tt_x_recip", verbose = FALSE)
+sdt <- set_dependency(sdt, unspInt ~ recip:transTrip1, verbose = FALSE)
+
+marginalEffects(ans, mydata, targets = sdt,
+    control_uncertainty = set_postest_uncertainty_saom(mode = "delta"))
+```
+
+The dependency is declared once and reaches both steps of the second
+difference, so the cross term falls out of the arithmetic rather than being
+rebuilt by hand. And, as with everything else here, the answer differs between
+tie creation and tie maintenance.
+
+## Beyond this walkthrough
+
+The walkthrough kept to one kind of target — a statistic that varies across ego's
+alternatives — evaluated at the observed waves. Two things beyond that are worth
+knowing about, neither of which was covered in the session.
+
+**An ego statistic needs a different contrast.** Every target so far has been a statistic that varies across ego's alternatives —
+reciprocity, two-paths. An effect that only depends on ego's covariate value does not: 
+`egoX` for alcohol is the same number for every alternative this actor has, 
+so it cannot be moved for one alter on its own. The perturbation has to shift 
+ego's whole choice set at once, raising every
+creation alternative and lowering every dissolution one.
+
+That is worked out from the effect, so nothing extra has to be asked for. Setting a
+target on an ego effect switches the perturbation to the ego-wide form and brings the
+probability-mass contrasts along with it. Alcohol is a graded 1–5 scale rather than
+an indicator, so the contrast to ask for is `diff = 1` — one unit more drinking —
+rather than a $0 \to 1$ switch:
+
+```{r ego-target}
+etg <- make_marginal_targets(ans, effects = myeff, depvar = "mynet",
+                             type = "tieProb", level = "period",
+                             includeDefaults = FALSE)
+etg <- set_target(etg, egoX, covar1 = "alcohol", diff = 1,
+                  name = "alcohol_ego", verbose = FALSE)
+
+marginalEffects(ans, mydata, targets = etg,
+    control_uncertainty = set_postest_uncertainty_saom(mode = "bootstrap",
+                                                       nsim = 200))
+```
+
+Three numbers instead of one, answering different questions. The first difference
+(`firstDiff`) is the per-tie one: how much one focal friendship's probability
+moves. The two probability-mass contrasts (`massCreation`, `massDissolution`) are
+the totals across the whole choice set — how much probability moves into forming
+*some* friendship and out of dropping *one*. Their difference 
+is the effect on expected degree change, which for a sender effect is arguably a
+better representation of its impact than the average first difference. Each
+estimate carries its own interval, named after the quantity it belongs to.
+
+One thing to keep in mind about `diff`: it shifts every actor by one unit from
+wherever they start, so a pupil already at 5 is moved to 6 — a value the scale
+never takes. Holding the contrast the same size for everyone is what makes the
+average interpretable, but it does mean part of that average is evaluated off the
+observed range. Worth remembering whenever a covariate has a hard ceiling or floor.
+
+The perturbation mode can be overridden — `set_target(..., perturbType = "alter")`,
+and `massContrasts` to force the extra columns on or off — though there is usually
+no reason to, beyond something specific such as comparing ego and alter effects
+directly.
+
+**Averaging over model-implied ministeps.** `dynamic = TRUE` on the targets replaces
+the observed-wave decision situations with the ones the fitted model says occur
+between waves. It needs an algorithm to simulate with, which goes in `control_algo`:
+
+```{r dynamic-me}
+dtg <- make_marginal_targets(ans, effects = myeff, depvar = "mynet",
+                             type = "tieProb", level = "period",
+                             dynamic = TRUE, includeDefaults = FALSE)
+dtg <- set_target(dtg, recip, contrast = c(0, 1), name = "recip_fd",
+                  verbose = FALSE)
+dtg <- set_dependency(dtg, unspInt ~ recip:transTrip1, verbose = FALSE)
+
+marginalEffects(ans, mydata, targets = dtg,
+    control_algo = set_postest_algo_saom(algorithm = myalgo, n3 = 100,
+                                         verbose = FALSE))
+```
+
+Compare with the observed-wave answer from Step 5. When the two agree, the
+observed-wave summary is not being driven by a few atypical situations.
+
+The standard error here is still analytic, with one addition: averaging over
+simulated chains means the chains themselves depend on the parameters, so a
+correction for that is included alongside the usual delta-method term. It happens
+by itself for a dynamic target.
+
+## Where this leaves us
+
+| question | quantity |
+|---|---|
+| are ties more prevalent where the condition holds? | descriptive difference (Step 1) |
+| what does the model work from? | change statistics (Step 2) |
+| what does the model say about one decision? | predicted probabilities (Step 3) |
+| is that just creation versus maintenance? | split by margin (Step 4) |
+| what does *this* mechanism contribute? | first difference, averaged into an AME (Step 5) |
+| how much of the raw gap is the mechanism? | compare the two (Step 6) |
+| is the effect constant? | conditional AMEs (Step 7) |
+| do two mechanisms interact? | second difference (Step 8) |

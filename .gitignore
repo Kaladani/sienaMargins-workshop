@@ -1,0 +1,29 @@
+# Quarto working state
+/.quarto/
+**/*.quarto_ipynb
+
+# Rendered output.  It lands in the bundle root (see output-dir in
+# _quarto.yml), so it is listed file by file rather than as one directory.
+/*.html
+/*_files/
+/site_libs/
+/search.json
+
+# NOT ignored on purpose: /_freeze/ ships, so the book renders without
+# refitting any models.  See the note in _quarto.yml.
+
+# RSiena writes an estimation report into the working directory whenever
+# siena() runs, so rendering chapters 4 and 5 leaves these behind.
+*_out.txt
+.txt
+
+# The AK data are not redistributed here.  They live in data/ locally -- either
+# downloaded on first use (scripts/download_data.R) or already to hand -- but
+# they are deliberately kept out of the repository.  See data/README.md.
+/data/*.RData
+/data/*.pdf
+
+# macOS
+.DS_Store
+**/.DS_Store
+.Rproj.user

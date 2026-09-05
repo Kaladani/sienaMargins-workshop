@@ -1,0 +1,54 @@
+project:
+  type: book
+  # The book renders into the bundle root rather than into _book/, so that
+  # someone who opens this folder finds index.html at the top level instead of
+  # having to know to look inside a directory named with a leading underscore.
+  output-dir: .
+  # Chapters keep their own working directory, which for this bundle is the
+  # workshop/ folder itself.  The scripts in scripts/ assume the same.
+  execute-dir: file
+
+book:
+  title: "Interpreting Model Estimates"
+  subtitle: "Marginal effects in RSiena"
+  author:
+    - Daniel Gotthardt (University of Hamburg)
+    - Christian Steglich (University of Groningen/Linköping University)
+    - Marijtje van Duijn (University of Groningen)
+  date: last-modified
+  chapters:
+    - index.qmd
+    - 01-interpretation.qmd
+    - 02-marginal-effects.qmd
+    - 03-worked-example.qmd
+    - 04-minimal-meta-analysis.qmd
+    - 05-meta-analysis.qmd
+    - 99-outlook.qmd
+  appendices:
+    - references.qmd
+
+bibliography: references.bib
+link-citations: true
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    df-print: kable
+    code-link: false
+    fig-width: 8
+    fig-height: 4.5
+
+execute:
+  warning: false
+  message: false
+  # Chunk output is cached in _freeze/, which ships with this bundle, so
+  # `quarto render` re-executes a chapter only when that chapter's source has
+  # changed.  A reader who just renders changes nothing, so nothing is refitted
+  # and the book builds in seconds without RSiena installed.  Editing a chapter
+  # here does refresh it, which is what you want while writing.
+  #
+  # Either way this only affects `quarto render`: running chunks yourself in
+  # RStudio always executes, so the chapters stay usable as live tutorials.
+  freeze: auto

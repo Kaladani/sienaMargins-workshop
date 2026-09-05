@@ -1,0 +1,88 @@
+# About this material {.unnumbered}
+
+This is the written version of the EUSN workshop *Interpreting Model Estimates:
+Marginal Effects in RSiena* (11 August 2026), extended so that it can be read on
+its own.
+
+It has two halves that do different jobs.
+
+**Chapters 1–2 are for reading.** They set out why a SAOM coefficient is not an
+effect size, what a marginal effect is in general, and how the idea has to be
+adapted for a model whose decisions are unobserved. Few formulas, and the ones
+that appear are the ones you need to read the output later.
+
+**Chapters 3–5 are for running.** They are executable documents, and they scale
+up: the worked example computes every quantity from Chapters 1–2 on the `s50` data
+that ships with RSiena; Chapter 4 does the same across three school classes and
+pools the results; Chapter 5 does it for seventeen classes under six
+specifications.
+
+Chapter 6 says which parts are settled and which are current work — worth reading
+before relying on any of it in a paper.
+
+## How to use the code chapters
+
+Chapters 3 to 5 are ordinary `.qmd` files and work on their own — open any of them
+in RStudio and run the chunks. Chapters 3 and 4 fit their models live and are meant
+to be used this way; Chapter 5 reads pre-computed results that ship in the bundle.
+
+The rendered HTML does **not** refit anything: chunk output is cached in `_freeze/`,
+which ships too, so the HTML builds in seconds and without RSiena installed. That
+cache only affects `quarto render` — running chunks yourself always executes.
+
+```r
+remotes::install_github("stocnet/rsiena@sienaMargins")
+install.packages(c("metafor", "ggplot2", "sna"))
+```
+
+The `sienaMargins` branch is required: `predict()`, `marginalEffects()` and the
+target helpers do not exist on the release version. Three things have to be in
+place before that install will work:
+
+- **R 4.5.0 or newer.** RSiena has not been compatible with earlier versions
+  since 1.5.0.
+- **On Windows, [RTools 4.5](https://cran.r-project.org/bin/windows/Rtools/).**
+  The branch ships C++ that is compiled during installation; macOS and Linux
+  normally have the compilers already. Either way the build takes a few minutes.
+- **The specification syntax introduced in RSiena 1.6.** Everything here is
+  written in it. If you know the older syntax, chapter 3 of the manual
+  [@SienaManual] sets the old and new function names side by side, and
+  `transformScript()` converts a script for you.
+
+## What is in this folder
+
+```
+01–02, 99   the reading chapters
+03-05      the three executable chapters
+data/       where the friendship data go — not included, see data/README.md
+scripts/    the meta-analysis pipeline, with its own README
+results/    fitted models and per-class marginal effects (.rds)
+output/     pooled tables and plots (.csv, .png)
+figs/       figures used by the reading chapters
+```
+
+The empirical data are not distributed with this material — they belong to the
+study they come from. Chapter 4 and `scripts/estimation.R` fetch them on first
+use; `data/README.md` says where they come from and on what terms. Chapter 3
+needs nothing extra, since it uses the `s50` data that ships with RSiena.
+
+Run anything with the working directory set to this folder — paths are relative
+to it. Opening it as an RStudio project does that for you.
+
+Because every stage's results are included, you can start at any point in the
+pipeline: re-pool from `results/postest_all_df.rds` in seconds, recompute
+marginal effects from `results/estimation_results.rds` in minutes, or re-estimate
+from the raw data if you have the time and have fetched them.
+`scripts/README.md` has the run order and the cost of each stage.
+
+## The workshop programme
+
+For reference, and because the chapter order follows it:
+
+| block | chapters here |
+|---|---|
+| Introduction, Motivation | 1 |
+| Marginal effects | 2 |
+| *coffee* | — |
+| Example | 3 |
+| Meta-analysis | 4, 5 |

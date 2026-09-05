@@ -1,0 +1,96 @@
+---
+title: "What is settled, and what is current work"
+subtitle: "How much weight each quantity can carry"
+---
+
+A short guide to how much weight each quantity can carry.
+
+## Ready to use
+
+The per-opportunity quantities are the ones to report: first differences on the
+tie-presence scale, second differences for interactions, each split by creation and
+maintenance margin, and averaged either at the observed waves or along
+model-implied ministeps.
+
+They are well defined, they are implemented, and their interpretation is the one
+stated in Chapter 2: a probability change *per decision opportunity*, holding the
+decision situation fixed.
+
+Ego-level covariates are perturbed across the whole choice set rather than one
+alternative at a time, for the reason given in the aside in Chapter 2. That happens
+by itself, so the per-tie numbers you get for a sender effect are sound; they are
+just a narrow summary of it. The probability-mass contrast is the fuller one, and it
+is what to reach for before drawing conclusions about covariate sender effects.
+
+## Comparability
+
+Meta-analysing marginal effects rather than parameters is usually motivated by
+some combination of five claims. They hold up differently, and two are worth
+spelling out.
+
+| claim | how it holds up |
+|---|---|
+| more meaningful than meta-analysing parameters | yes — a pooled coefficient averages quantities whose scales need not match |
+| challenges "the same model for all networks" | yes, as a question worth asking rather than an answer already given |
+| the exact same specification is less necessary | in part, and it rests on an assumption — below |
+| the main advantage is a common scale | yes, though a common unit is not invariance — below |
+| compare within networks, then those comparisons across networks | yes, and arguably the strongest of the five |
+
+**On the specification.** Pooling probability-scale quantities is more forgiving
+than pooling coefficients, since the numbers at least share units. But an effect
+missing from one network's specification does not simply drop out: what a model
+leaves unexplained is folded into everything else, so the remaining coefficients
+contract and their AMEs move with them. Treating a non-estimable effect as a true
+zero is an assumption about that network rather than something the scale provides —
+reasonable where the effect really is negligible there, and worth stating rather
+than leaving implicit.
+
+**On the common scale.** The probability scale gives a common unit and an
+interpretable quantity: the effective impact of a mechanism on decisions, in that
+network's actual conditions. What it does not give is invariance. Where two
+networks genuinely differ in how predictable their actors' decisions are, the same
+underlying preference translates into different probability shifts — and an effect
+size that comes out differently there is reporting something true. A difference in
+AMEs identifies a difference in effective impact, noise included by construction;
+it does not identify a difference in preferences.
+
+## Accumulating to a whole period
+
+Everything in Chapter 2 is per decision opportunity. A natural next question is what
+a mechanism contributes over a whole period between two waves, and the
+straightforward answer is to add the per-ministep effects along a simulated
+sequence.
+
+This has one clear advantage: it absorbs the rate parameter. Two networks whose
+actors decide at very different frequencies can have the same per-opportunity effect
+but very different period-level pressure, and only the accumulated version reflects
+that — which makes it the natural candidate when opportunity rates differ across the
+networks being compared.
+
+The scale needs care, though. An additive sum of probability changes is a count —
+extra ties created plus dissolutions avoided over the period — not a probability. It
+is not bounded, and it should not be set against a between-wave difference in tie
+proportions: a dyad that creates a tie and later drops it contributes twice to the
+count while changing prevalence not at all. So read ratios across specifications,
+which sit on a common scale, rather than levels on their own.
+
+Getting from that count to a genuinely bounded, prevalence-scale period quantity is
+current work. The construction follows the tie's own two-state history rather than
+summing increments; it is derived but not implemented, so it is not available in the
+software yet.
+
+## The rate parameter
+
+Rate effects sit outside everything above, and that is a scope choice rather than an
+oversight: any count-level quantity mixes how *often* actors decide with what they
+choose given the chance, and separating the two needs its own treatment. The rate
+parameter is best read as governing how quickly a dyad's situation can change, not
+where it ends up.
+
+## Further reading
+
+The SAOM itself is set out in @Snijders01 and, at book length, in @AMAND. For
+marginal effects generally, @LongMustillo2021 is the closest thing to a standard
+reference, and @Glasgow2022 covers the discrete-choice side. On the ERGM side,
+@Duxbury2023 sets out the scaling problem and @Duxbury2026 develops effect sizes
+for structural terms; @IndlekoferBrandes2013 is the nearest existing SAOM tool.

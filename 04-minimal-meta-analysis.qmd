@@ -1,0 +1,234 @@
+---
+title: "A meta-analysis at the smallest useful size"
+subtitle: "Three classes, one specification, one effect"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    df-print: kable
+execute:
+  warning: false
+  message: false
+---
+
+The previous chapter computed marginal effects for a single network. Sometimes the
+question spans several — a few classes, schools or teams — and then what is wanted
+is what the mechanism does across them, and how much they differ.
+
+This chapter does that at the smallest size that still shows the whole arc: three
+classes, one specification, one marginal effect. The next chapter does the same
+for seventeen classes and six specifications, which adds bookkeeping rather than
+new ideas, so this is the version to copy.
+
+Defining effect sizes that can be compared across studies has a long history
+outside network analysis, and the standard machinery is the random-effects or
+multilevel model: a common part plus a study-specific part, with the option of
+asking whether study-level variables — size, year, setting — account for the
+differences.
+
+For SAOMs this is already worked out. Section 12.3 of the RSiena manual
+[@SienaManual] covers the practical side, and the two-stage population model is
+discussed in more detail in @AMAND.
+
+This chapter is in the comfortable case: the data are all to hand, so the same
+specification can be fitted to every class, and each fit can be checked for
+convergence before its estimate goes into the pool. That is worth noting because it
+is not the usual case. Synthesising published results means taking the
+specifications other authors chose, which will differ; and even here, fitting the
+same specification everywhere does not make the classes identical in how
+predictable behaviour is. Chapter 1 raised both points and Chapter 6 returns to
+what a pooled estimate can be read as.
+
+The pooling below uses `metafor` [@Viechtbauer2010], which is the general-purpose
+tool for this and does not know anything about networks: it takes an estimate and
+a standard error per study, whatever they came from.
+
+```{r setup}
+#| include: false
+library(RSiena)
+library(metafor)
+library(ggplot2)
+theme_set(theme_minimal(base_size = 12))
+CRE <- "#2166ac"   # creation
+MNT <- "#d73027"   # maintenance
+```
+
+## The groups and their data
+
+One entry per group. A "group" is whatever your studies are — here school
+classes from the Dutch early-adolescence study of @Knecht2006, each with a
+friendship network at two time points plus a gender covariate.
+
+```{r data}
+## The AK data are not shipped with this material -- see data/README.md.
+## This downloads them into data/ the first time, and does nothing afterwards.
+source("scripts/download_data.R")
+ensure_ak_data()
+
+load("data/AK_friendship.RData")   # friendship[[class]][["W"]], [["X"]]
+load("data/AK_gender.RData")       # male[[class]]
+
+groups <- c("12b", "12c", "12g")
+
+make_group_data <- function(g) {
+  n <- length(male[[g]])
+  make_data_rsiena(
+    friendship = as_dependent_rsiena(
+      array(c(friendship[[g]][["W"]], friendship[[g]][["X"]]),
+            dim = c(n, n, 2))),
+    sex_m = as_covariate_rsiena(male[[g]], centered = FALSE)
+  )
+}
+
+sapply(groups, function(g) length(male[[g]]))
+```
+
+## One specification for all of them
+
+The same effects for every group, so that each contributes an estimate of the
+same quantity. Density and reciprocity are included by default.
+
+```{r spec}
+make_group_spec <- function(dat) {
+  eff <- make_specification(dat)
+  eff <- set_effect(eff, transTrip1, verbose = FALSE)
+  eff <- set_effect(eff, c(egoX, altX), covar1 = "sex_m", verbose = FALSE)
+  eff
+}
+```
+
+## The effect we want from each group
+
+The first difference in the probability that a tie is present after one ministep,
+when reciprocity goes from 0 to 1 — computed separately for tie creation and tie
+maintenance, which is what `condition = "density"` does.
+
+The margins are kept apart for the reason the previous chapter gave:
+creation and maintenance are different decisions with quite different baseline
+probabilities, so a single number averages over both.
+
+```{r targets}
+make_group_targets <- function(fit, eff) {
+  tg <- make_marginal_targets(fit, effects = eff, depvar = "friendship",
+                              type = "tieProb", level = "period",
+                              condition = "density", includeDefaults = FALSE)
+  set_target(tg, recip, contrast = c(0, 1), name = "recip_fd", verbose = FALSE)
+}
+```
+
+## Estimate and compute, one group at a time
+
+A plain loop, so you can stop after one group and look at it.
+
+Worth keeping an eye on the convergence indicator: above roughly 0.25 the fit has
+not converged, and it is better to rerun that group with `prevAns = fit` — as
+`scripts/estimation.R` does — before its estimate goes into a pool.
+
+```{r estimate}
+algo      <- set_algorithm_saom(cond = FALSE, n3 = 1000, seed = 1234567)
+per_group <- list()
+
+for (g in groups) {
+  dat <- make_group_data(g)
+  eff <- make_group_spec(dat)
+  fit <- siena(data = dat, effects = eff, control_algo = algo,
+               batch = TRUE, verbose = FALSE)
+
+  me <- marginalEffects(
+    fit, dat, targets = make_group_targets(fit, eff),
+    control_uncertainty = set_postest_uncertainty_saom(mode = "delta"))
+
+  me <- as.data.frame(me)
+
+  ## The conditioning adds one column named <depvar>_<statistic>; find it by
+  ## suffix rather than by name, so this keeps working if the depvar is renamed.
+  dens <- grep("_density$", names(me), value = TRUE)[1]
+
+  me$group     <- g
+  me$converged <- round(as.vector(fit$tconv.max), 3)
+  me$margin    <- ifelse(me[[dens]] > 0, "creation", "maintenance")
+
+  per_group[[g]] <- me[, c("group", "converged", "margin", "firstDiff", "SE")]
+}
+
+results <- do.call(rbind, per_group)
+rownames(results) <- NULL
+results$firstDiff <- round(results$firstDiff, 4)
+results$SE        <- round(results$SE, 4)
+results
+```
+
+Three classes, two margins each. Two things to notice before pooling: how far
+apart the margins are within a single class, and how much the classes differ from
+one another. Summarising both is what the next step is for.
+
+## Pool
+
+One random-effects meta-analysis per margin. The estimate and its standard error
+are all `metafor` needs.
+
+```{r pool}
+pooled <- do.call(rbind, lapply(unique(results$margin), function(mg) {
+  d <- subset(results, margin == mg)
+  m <- rma(yi = d$firstDiff, sei = d$SE)
+  data.frame(margin  = mg,
+             est     = m$b[1, 1],
+             ci_low  = m$ci.lb,
+             ci_high = m$ci.ub,
+             tau2    = m$tau2,   # between-group variance
+             QEp     = m$QEp,    # small = groups differ more than chance
+             k       = m$k)
+}))
+pooled[, -1] <- round(pooled[, -1], 4)
+pooled
+```
+
+```{r pool-plot}
+#| fig-width: 7
+#| fig-height: 3
+ggplot(results, aes(firstDiff, group, colour = margin)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_pointrange(aes(xmin = firstDiff - 1.96 * SE,
+                      xmax = firstDiff + 1.96 * SE),
+                  position = position_dodge(width = 0.4)) +
+  geom_point(data = pooled, aes(est, "pooled", colour = margin),
+             shape = 18, size = 4,
+             position = position_dodge(width = 0.4)) +
+  scale_colour_manual(values = c(creation = CRE, maintenance = MNT),
+                      name = NULL) +
+  labs(x = "effect of reciprocity on tie probability (pp)", y = NULL)
+```
+
+Across these classes, reciprocity shifts the probability that a tie is present
+after one decision opportunity by the pooled estimate, in probability points. `tau2` says how much the classes genuinely differ; a small `QEp` says they
+differ by more than sampling error alone would give.
+
+Two things carried over from the previous chapter. This is a *per-opportunity*
+quantity, describing one ministep rather than a whole period. And the interval is
+analytic: it linearises the map from parameters to probabilities, so it comes out
+symmetric around the estimate. A simulation-based interval propagates the curvature
+of that map instead, which can show up where a probability sits close to zero or
+one. Both rest on the same normal approximation for the parameter estimates that
+`siena07` already makes for the coefficients, so what separates them is the
+treatment of the map rather than of the parameters.
+
+## Adapting this to your own study
+
+Three things change, and nothing else has to:
+
+1. **The groups and their data** — `groups`, and `make_group_data()` to build one
+   RSiena data object per group from whatever you have.
+2. **The specification** — `make_group_spec()`, the same effects for every group.
+3. **The target** — `make_group_targets()`. Add further `set_target()` calls for
+   more effects, or `set_second_diff()` for an interaction.
+
+The loop, the convergence check and the pooling stay as they are.
+
+## Where to go next
+
+| you want | see |
+|---|---|
+| several specifications per group | `scripts/estimation.R` |
+| the model-free comparison to set these against | `scripts/descriptives.R` |
+| averaging over simulated ministeps, or accumulating over a period | `scripts/Postestimation.R` |
+| pooling at scale, with plots per effect and specification | `scripts/meta_analysis.R`, and the next chapter |
