@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Interpreting a SAOM – Interpreting Model Estimates</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./04-minimal-meta-analysis.html" rel="next">
+<link href="./02-marginal-effects.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-27c261d06b905028a18691de25d09dde.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03-worked-example.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Interpreting a SAOM</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Interpreting Model Estimates</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About this material</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-interpretation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">What a coefficient tells you</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-marginal-effects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Marginal effects</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-worked-example.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Interpreting a SAOM</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-minimal-meta-analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">A meta-analysis at the smallest useful size</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-meta-analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Marginal effects across 17 school classes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./99-outlook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">What is settled, and what is current work</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#setup-run-once" id="toc-setup-run-once" class="nav-link active" data-scroll-target="#setup-run-once"><span class="header-section-number">3.1</span> Setup — run once</a></li>
+  <li><a href="#the-model-we-are-trying-to-interpret" id="toc-the-model-we-are-trying-to-interpret" class="nav-link" data-scroll-target="#the-model-we-are-trying-to-interpret"><span class="header-section-number">3.2</span> The model we are trying to interpret</a></li>
+  <li><a href="#step-1-the-descriptive-difference" id="toc-step-1-the-descriptive-difference" class="nav-link" data-scroll-target="#step-1-the-descriptive-difference"><span class="header-section-number">3.3</span> Step 1 — the descriptive difference</a></li>
+  <li><a href="#step-2-what-the-model-sees" id="toc-step-2-what-the-model-sees" class="nav-link" data-scroll-target="#step-2-what-the-model-sees"><span class="header-section-number">3.4</span> Step 2 — what the model sees</a></li>
+  <li><a href="#aside-the-same-statistics-along-simulated-ministeps" id="toc-aside-the-same-statistics-along-simulated-ministeps" class="nav-link" data-scroll-target="#aside-the-same-statistics-along-simulated-ministeps"><span class="header-section-number">3.5</span> Aside — the same statistics along simulated ministeps</a></li>
+  <li><a href="#step-3-the-same-comparison-inside-the-model" id="toc-step-3-the-same-comparison-inside-the-model" class="nav-link" data-scroll-target="#step-3-the-same-comparison-inside-the-model"><span class="header-section-number">3.6</span> Step 3 — the same comparison inside the model</a></li>
+  <li><a href="#step-4-creation-and-maintenance-are-different-decisions" id="toc-step-4-creation-and-maintenance-are-different-decisions" class="nav-link" data-scroll-target="#step-4-creation-and-maintenance-are-different-decisions"><span class="header-section-number">3.7</span> Step 4 — creation and maintenance are different decisions</a></li>
+  <li><a href="#step-5-the-adjusted-effect" id="toc-step-5-the-adjusted-effect" class="nav-link" data-scroll-target="#step-5-the-adjusted-effect"><span class="header-section-number">3.8</span> Step 5 — the adjusted effect</a></li>
+  <li><a href="#step-6-how-much-the-adjustment-moves-it" id="toc-step-6-how-much-the-adjustment-moves-it" class="nav-link" data-scroll-target="#step-6-how-much-the-adjustment-moves-it"><span class="header-section-number">3.9</span> Step 6 — how much the adjustment moves it</a></li>
+  <li><a href="#step-7-effects-are-not-constant" id="toc-step-7-effects-are-not-constant" class="nav-link" data-scroll-target="#step-7-effects-are-not-constant"><span class="header-section-number">3.10</span> Step 7 — effects are not constant</a></li>
+  <li><a href="#step-8-the-interaction-as-a-second-difference" id="toc-step-8-the-interaction-as-a-second-difference" class="nav-link" data-scroll-target="#step-8-the-interaction-as-a-second-difference"><span class="header-section-number">3.11</span> Step 8 — the interaction, as a second difference</a></li>
+  <li><a href="#beyond-this-walkthrough" id="toc-beyond-this-walkthrough" class="nav-link" data-scroll-target="#beyond-this-walkthrough"><span class="header-section-number">3.12</span> Beyond this walkthrough</a></li>
+  <li><a href="#where-this-leaves-us" id="toc-where-this-leaves-us" class="nav-link" data-scroll-target="#where-this-leaves-us"><span class="header-section-number">3.13</span> Where this leaves us</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Interpreting a SAOM</span></h1>
+<p class="subtitle lead">From coefficients to probabilities, one decision at a time</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="setup-run-once" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="setup-run-once"><span class="header-section-number">3.1</span> Setup — run once</h2>
+<p>Everything here needs the <code>sienaMargins</code> branch of RSiena, which is where <code>predict()</code> and <code>marginalEffects()</code> live, plus <code>ggplot2</code> for the figures.</p>
+<p><strong>These chunks do not run when the document is rendered.</strong> Run whichever one matches your setup by hand, then restart R.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"remotes"</span>, <span class="st">"ggplot2"</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"stocnet/rsiena@sienaMargins"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>If you keep this project’s dependencies in <code>renv</code> instead:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"renv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">install</span>(<span class="fu">c</span>(<span class="st">"stocnet/rsiena@sienaMargins"</span>, <span class="st">"ggplot2"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Check that it worked — <code>predict()</code> needs to accept a targets object:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">"RSiena"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"RSiena"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">exists</span>(<span class="st">"make_predict_targets"</span>)   <span class="co"># TRUE on the sienaMargins branch</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Afterwards we can setup</p>
+</section>
+<section id="the-model-we-are-trying-to-interpret" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="the-model-we-are-trying-to-interpret"><span class="header-section-number">3.2</span> The model we are trying to interpret</h2>
+<p>Take the <code>s50</code> data that ships with RSiena: 50 pupils, three waves of friendship nominations, plus smoking and drinking. Two actor covariates, so the model has both kinds of effect — structural effects belonging to a single alternative, and covariate effects that move an actor’s whole choice set at once.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mynet   <span class="ot">&lt;-</span> <span class="fu">as_dependent_rsiena</span>(<span class="fu">array</span>(<span class="fu">c</span>(s501, s502, s503), <span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">50</span>, <span class="dv">3</span>)))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>smoke   <span class="ot">&lt;-</span> <span class="fu">as_covariate_rsiena</span>(s50s[, <span class="dv">1</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>alcohol <span class="ot">&lt;-</span> <span class="fu">as_covariate_rsiena</span>(s50a[, <span class="dv">1</span>])</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>mydata  <span class="ot">&lt;-</span> <span class="fu">make_data_rsiena</span>(mynet, smoke, alcohol)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>myeff <span class="ot">&lt;-</span> <span class="fu">make_specification</span>(mydata)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>myeff <span class="ot">&lt;-</span> <span class="fu">set_effect</span>(myeff, transTrip1, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>myeff <span class="ot">&lt;-</span> <span class="fu">set_effect</span>(myeff, egoX, <span class="at">covar1 =</span> <span class="st">"smoke"</span>,   <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>myeff <span class="ot">&lt;-</span> <span class="fu">set_effect</span>(myeff, egoX, <span class="at">covar1 =</span> <span class="st">"alcohol"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>myeff <span class="ot">&lt;-</span> <span class="fu">set_effect</span>(myeff, altX, <span class="at">covar1 =</span> <span class="st">"alcohol"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="do">## A user-specified interaction of reciprocity and transitivity.  Its change</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="do">## statistic is the product of the two components' -- which matters in Step 8.</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>myeff <span class="ot">&lt;-</span> <span class="fu">set_interaction</span>(myeff, <span class="fu">c</span>(recip, transTrip1), <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>myalgo <span class="ot">&lt;-</span> <span class="fu">set_algorithm_saom</span>(<span class="at">cond =</span> <span class="cn">FALSE</span>, <span class="at">n3 =</span> <span class="dv">1000</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>ans <span class="ot">&lt;-</span> <span class="fu">siena</span>(<span class="at">data =</span> mydata, <span class="at">effects =</span> myeff, <span class="at">control_algo =</span> myalgo,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>             <span class="at">batch =</span> <span class="cn">TRUE</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>siena will create/use an output file mydata_out.txt .</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">effect   =</span> <span class="fu">names</span>(<span class="fu">coef</span>(ans)),</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">estimate =</span> <span class="fu">round</span>(<span class="fu">coef</span>(ans), <span class="dv">3</span>),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">SE       =</span> <span class="fu">round</span>(<span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(ans))), <span class="dv">3</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">row.names =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">effect</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">SE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">mynet_density_eval</td>
+<td style="text-align: right;">-2.797</td>
+<td style="text-align: right;">0.149</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mynet_recip_eval</td>
+<td style="text-align: right;">2.790</td>
+<td style="text-align: right;">0.286</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mynet_transTrip1_eval</td>
+<td style="text-align: right;">1.361</td>
+<td style="text-align: right;">0.210</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mynet_egoX_smoke_eval</td>
+<td style="text-align: right;">0.063</td>
+<td style="text-align: right;">0.128</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mynet_altX_alcohol_eval</td>
+<td style="text-align: right;">-0.027</td>
+<td style="text-align: right;">0.067</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mynet_egoX_alcohol_eval</td>
+<td style="text-align: right;">0.009</td>
+<td style="text-align: right;">0.092</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mynet_unspInt_eval</td>
+<td style="text-align: right;">-0.406</td>
+<td style="text-align: right;">0.502</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Reciprocity is large and positive. <strong>But how large?</strong> The coefficient is a change in a log-odds inside a choice among 50 alternatives. It is not a probability, not a rate, and not easily comparable to the reciprocity coefficient of another model on another network.</p>
+<p>This document walks from that coefficient to quantities that are (more so).</p>
+</section>
+<section id="step-1-the-descriptive-difference" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="step-1-the-descriptive-difference"><span class="header-section-number">3.3</span> Step 1 — the descriptive difference</h2>
+<p>Three simple statistics we can count directly between two observed waves, with no model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>as_tie <span class="ot">&lt;-</span> <span class="cf">function</span>(m) { m[m <span class="sc">==</span> <span class="dv">10</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span>; <span class="fu">diag</span>(m) <span class="ot">&lt;-</span> <span class="cn">NA</span>; m }</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">as_tie</span>(s501); x2 <span class="ot">&lt;-</span> <span class="fu">as_tie</span>(s502)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ok <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(x1) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(x2)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>p_rec <span class="ot">&lt;-</span> <span class="fu">mean</span>(x2[ok <span class="sc">&amp;</span> <span class="fu">t</span>(x1) <span class="sc">==</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>p_not <span class="ot">&lt;-</span> <span class="fu">mean</span>(x2[ok <span class="sc">&amp;</span> <span class="fu">t</span>(x1) <span class="sc">==</span> <span class="dv">0</span>] <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="st">"tie creation (non-ties at t1 that appear)"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">"tie maintenance (ties at t1 that survive)"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>               <span class="st">"P(tie at t2 | reciprocated at t1)"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>               <span class="st">"P(tie at t2 | not reciprocated at t1)"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>               <span class="st">"descriptive difference in probability"</span>),</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="fu">round</span>(<span class="fu">c</span>(<span class="fu">mean</span>(x2[ok <span class="sc">&amp;</span> x1 <span class="sc">==</span> <span class="dv">0</span>] <span class="sc">==</span> <span class="dv">1</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">mean</span>(x2[ok <span class="sc">&amp;</span> x1 <span class="sc">==</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                  p_rec, p_not, p_rec <span class="sc">-</span> p_not), <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">quantity</th>
+<th style="text-align: right;">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">tie creation (non-ties at t1 that appear)</td>
+<td style="text-align: right;">0.025</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tie maintenance (ties at t1 that survive)</td>
+<td style="text-align: right;">0.504</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P(tie at t2 | reciprocated at t1)</td>
+<td style="text-align: right;">0.478</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P(tie at t2 | not reciprocated at t1)</td>
+<td style="text-align: right;">0.027</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">descriptive difference in probability</td>
+<td style="text-align: right;">0.451</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>The last row is the <strong>descriptive difference in probability</strong>: are ties more prevalent where the condition holds? Any researcher can compute it directly from two waves.</p>
+<p>It is also a gap that reflects <strong>all mechanisms at once</strong>. Dyads that reciprocate are also more transitively embedded, and involve pupils who differ in other ways. Nothing here separates a reciprocity mechanism from any of that.</p>
+<p>Note too how different tie creation and tie maintenance are. Hold on to that.</p>
+</section>
+<section id="step-2-what-the-model-sees" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="step-2-what-the-model-sees"><span class="header-section-number">3.4</span> Step 2 — what the model sees</h2>
+<p>Before asking the model anything, it is worth looking at what it works from. The <strong>change statistics</strong> describe every alternative open to every actor: one row per ego–alter pair.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cs <span class="ot">&lt;-</span> <span class="fu">getChangeStatistics</span>(ans, mydata, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cs[cs<span class="sc">$</span>ego <span class="sc">!=</span> cs<span class="sc">$</span>choice, ], <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">group</th>
+<th style="text-align: right;">period</th>
+<th style="text-align: right;">ego</th>
+<th style="text-align: right;">choice</th>
+<th style="text-align: right;">mynet_density</th>
+<th style="text-align: right;">mynet_recip</th>
+<th style="text-align: right;">mynet_transTrip1</th>
+<th style="text-align: right;">mynet_egoX_smoke</th>
+<th style="text-align: right;">mynet_altX_alcohol</th>
+<th style="text-align: right;">mynet_egoX_alcohol</th>
+<th style="text-align: right;">mynet_unspInt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">-0.88</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">-0.88</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">-0.88</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Each row says: is this alternative reciprocated, how many two-paths does it have, do the two pupils drink alike - equivalently how much would the effect statistic differ if the tie to that alternative would exist vs if it would not exist. The <code>mynet_recip</code> column at period 1 is exactly the condition from Step 1 — so the descriptive difference can be recomputed from it, without the matrix algebra:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> cs[cs<span class="sc">$</span>period <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> cs<span class="sc">$</span>ego <span class="sc">!=</span> cs<span class="sc">$</span>choice, ]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tie2 <span class="ot">&lt;-</span> <span class="fu">as_tie</span>(s502)[<span class="fu">cbind</span>(p1<span class="sc">$</span>ego, p1<span class="sc">$</span>choice)]      <span class="co"># was there a tie at wave 2?</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">reciprocated     =</span> <span class="fu">mean</span>(tie2[p1<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">not_reciprocated =</span> <span class="fu">mean</span>(tie2[p1<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">0</span>] <span class="sc">==</span> <span class="dv">1</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    reciprocated not_reciprocated 
+      0.47787611       0.02652974 </code></pre>
+</div>
+</div>
+<p>The same two numbers as Step 1. That is the point: the condition you can count by hand and the condition the model conditions on are the same column. Everything from here on splits these rows in different ways.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Change statistics and toggle statistics differ in sign
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The toggle statistic of Chapter 2 is what <code>flip = FALSE</code> returns, under the name <em>change contribution</em>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="fu">getChangeStatistics</span>(ans, mydata, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">flip =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="do">## an existing tie that is also reciprocated, so the difference is visible</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>i    <span class="ot">&lt;-</span> <span class="fu">which</span>(cs<span class="sc">$</span>mynet_density <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">&amp;</span> cs<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">1</span>)[<span class="dv">1</span>]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"mynet_density"</span>, <span class="st">"mynet_recip"</span>, <span class="st">"mynet_transTrip1"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="st">`</span><span class="at">change statistic</span><span class="st">`</span>    <span class="ot">=</span> cs[i, cols],</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">toggle statistic</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">setNames</span>(cc[i, <span class="fu">paste0</span>(cols, <span class="st">"_eval"</span>)], cols))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">mynet_density</th>
+<th style="text-align: right;">mynet_recip</th>
+<th style="text-align: right;">mynet_transTrip1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">change statistic</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">toggle statistic</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Remember the distinction: the <strong>toggle statistic</strong> is what toggling would <em>do</em>, so dropping a reciprocated tie loses the reciprocity and it comes out negative. The <strong>change statistic</strong> is the same information as a property of the alternative — this alter <em>does</em> nominate ego, so it is positive. Conditioning uses the change statistic, which is why “condition on <code>recip</code>” means “is the reverse tie there”, not “what would toggling do”.</p>
+<p>Density is the exception: it is left on the toggle scale in both, so that its <code>+1</code> / <code>-1</code> marks the direction of the decision. As a change statistic it would be <code>+1</code> throughout, since a tie adds one to density whichever way the decision runs — which would be true but useless for telling creation from maintenance.</p>
+<p>These describe ego–alter pairs, which is what we want here. They can also be added up into ordinary network descriptives — the rows with <code>density == -1</code> are the ties that exist, so:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ties <span class="ot">&lt;-</span> p1[p1<span class="sc">$</span>mynet_density <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, ]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">ties              =</span> <span class="fu">nrow</span>(ties),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">reciprocated      =</span> <span class="fu">sum</span>(ties<span class="sc">$</span>mynet_recip),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">reciprocity_index =</span> <span class="fu">round</span>(<span class="fu">mean</span>(ties<span class="sc">$</span>mynet_recip), <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             ties      reciprocated reciprocity_index 
+           113.00             78.00              0.69 </code></pre>
+</div>
+</div>
+<p>which is the wave-1 network’s reciprocity index, computed without touching the adjacency matrix. This works for effects that are linear in the focal tie. It does <strong>not</strong> work for transitivity, where one tie takes part in several triplets and so would be counted more than once.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="aside-the-same-statistics-along-simulated-ministeps" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="aside-the-same-statistics-along-simulated-ministeps"><span class="header-section-number">3.5</span> Aside — the same statistics along simulated ministeps</h2>
+<p>The observed waves are only the starting points. <code>dynamic = TRUE</code> returns the change statistics along the model’s own simulated ministep sequences, with <code>chain</code> and <code>ministep</code> columns added:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dyn <span class="ot">&lt;-</span> <span class="fu">getChangeStatistics</span>(ans, mydata, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">dynamic =</span> <span class="cn">TRUE</span>, <span class="at">algorithm =</span> myalgo, <span class="at">n3 =</span> <span class="dv">4</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dyn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 118000     13</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dyn[, <span class="fu">c</span>(<span class="st">"chain"</span>, <span class="st">"ministep"</span>, <span class="st">"ego"</span>, <span class="st">"choice"</span>, <span class="st">"mynet_recip"</span>)], <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">chain</th>
+<th style="text-align: right;">ministep</th>
+<th style="text-align: right;">ego</th>
+<th style="text-align: right;">choice</th>
+<th style="text-align: right;">mynet_recip</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Four chains already give over a hundred thousand rows. Do the decision situations drift much as a chain runs?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>d1  <span class="ot">&lt;-</span> dyn[dyn<span class="sc">$</span>period <span class="sc">==</span> <span class="dv">1</span>, ]</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>agg <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(<span class="fu">cbind</span>(mynet_recip, mynet_transTrip1) <span class="sc">~</span> ministep, d1, <span class="at">FUN =</span> mean)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>long <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">ministep =</span> agg<span class="sc">$</span>ministep, <span class="at">statistic =</span> <span class="st">"reciprocated"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">value =</span> agg<span class="sc">$</span>mynet_recip),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">ministep =</span> agg<span class="sc">$</span>ministep, <span class="at">statistic =</span> <span class="st">"two-paths"</span>,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">value =</span> agg<span class="sc">$</span>mynet_transTrip1))</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(long, <span class="fu">aes</span>(ministep, value)) <span class="sc">+</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">size =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">colour =</span> CRE, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> statistic, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"ministep within the period"</span>,</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"mean over the alternatives on offer"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-worked-example_files/figure-html/drift-plot-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Fairly flat: the mix of alternatives actors face does not change dramatically between the start and the end of a period here. That is reassuring for everything that follows, where the observed contexts stand in for the whole path — but it is a property of this network, not a guarantee, and worth checking when the network moves a lot.</p>
+<p>You can also keep the contributions from the fit itself, with <code>set_output_saom(returnChangeContributions = TRUE)</code> in <code>siena()</code>. That stores every ministep of every phase-3 simulation, so it grows with actors, effects and simulations and becomes expensive in memory for larger models. <code>predict()</code> and <code>marginalEffects()</code> reach the same quantities internally but re-simulate in batches, so you do not normally need to hold them all at once.</p>
+</section>
+<section id="step-3-the-same-comparison-inside-the-model" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="step-3-the-same-comparison-inside-the-model"><span class="header-section-number">3.6</span> Step 3 — the same comparison inside the model</h2>
+<p>The descriptive difference compares two <em>observed networks</em>. The SAOM does not model that jump directly. It models the process <strong>between</strong> the waves as a sequence of <strong>ministeps</strong>: one actor gets an opportunity, looks at every alternative open to it, and toggles one tie — creating a new one, or keeping or dropping one it has.</p>
+<p>So every quantity below sits at one ministep and asks: for this actor, facing this alternative, what happens next?</p>
+<p><code>predict()</code> gives those probabilities. Because it works from the change statistics, we can split them by features of the decision situation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ptg <span class="ot">&lt;-</span> <span class="fu">make_predict_targets</span>(ans, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">type =</span> <span class="st">"tieProb"</span>, <span class="at">level =</span> <span class="st">"period"</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">includeDefaults =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>ptg <span class="ot">&lt;-</span> <span class="fu">set_condition</span>(ptg, recip,   <span class="at">name =</span> <span class="st">"by_recip"</span>,   <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>ptg <span class="ot">&lt;-</span> <span class="fu">set_condition</span>(ptg, density, <span class="at">name =</span> <span class="st">"by_context"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>ptg <span class="ot">&lt;-</span> <span class="fu">set_condition</span>(ptg, <span class="fu">c</span>(density, recip), <span class="at">name =</span> <span class="st">"by_both"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(ans, mydata, <span class="at">targets =</span> ptg,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">control_uncertainty =</span> <span class="fu">set_postest_uncertainty_saom</span>(<span class="at">mode =</span> <span class="st">"delta"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>These are tie probabilities — the probability the tie <strong>exists</strong> once the actor has taken its ministep — which is what <code>type = "tieProb"</code> asks for. Split by whether the reverse tie is already there:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span>by_recip</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: right;">mynet_recip</th>
+<th style="text-align: right;">tieProb</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">q_025</th>
+<th style="text-align: right;">q_975</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.0193814</td>
+<td style="text-align: right;">0.0008931</td>
+<td style="text-align: right;">0.0176310</td>
+<td style="text-align: right;">0.0211318</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.7520485</td>
+<td style="text-align: right;">0.0107342</td>
+<td style="text-align: right;">0.7310099</td>
+<td style="text-align: right;">0.7730871</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.0190433</td>
+<td style="text-align: right;">0.0009535</td>
+<td style="text-align: right;">0.0171744</td>
+<td style="text-align: right;">0.0209122</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.6107726</td>
+<td style="text-align: right;">0.0114561</td>
+<td style="text-align: right;">0.5883191</td>
+<td style="text-align: right;">0.6332262</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>This is the Step 1 comparison again, now from the model and at the ministep rather than between two waves. It reflects <strong>all mechanisms at once</strong> in exactly the same way: nothing here holds the decision situation fixed.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which actors are being compared?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Two separate things affect who enters these averages, and they are easy to run together.</p>
+<p>The first is already taken care of. Averaging is normalised per actor by default (<code>egoNormalize = TRUE</code>): each actor’s alternatives are averaged first, and those per-actor values are then averaged. So a pupil with forty open alternatives does not count for more than one with five.</p>
+<p>The second is not. Conditioning on <code>recip</code> splits the rows into two strata, and each is averaged over the actors who <em>have</em> that kind of alternative — which is not the same set of pupils. Some have no reciprocated alternative at all, so they enter the <code>recip = 0</code> average only, and the gap subtracts two means taken over different people.</p>
+<p>Differencing inside each actor’s own choice set first, and averaging only over actors with both kinds, avoids that. <code>level = "ego"</code> returns one value per actor per stratum, which is what makes it possible:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>etg <span class="ot">&lt;-</span> <span class="fu">make_predict_targets</span>(ans, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">type =</span> <span class="st">"tieProb"</span>, <span class="at">level =</span> <span class="st">"ego"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">includeDefaults =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>etg <span class="ot">&lt;-</span> <span class="fu">set_condition</span>(etg, recip, <span class="at">name =</span> <span class="st">"by_recip"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>eg  <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">predict</span>(ans, mydata, <span class="at">targets =</span> etg,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">control_uncertainty =</span> <span class="fu">set_postest_uncertainty_saom</span>(<span class="at">enabled =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>pooled <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(pred<span class="sc">$</span>by_recip)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(eg<span class="sc">$</span>period)), <span class="cf">function</span>(pd) {</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  e   <span class="ot">&lt;-</span> eg[eg<span class="sc">$</span>period <span class="sc">==</span> pd, ]</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  p   <span class="ot">&lt;-</span> pooled[pooled<span class="sc">$</span>period <span class="sc">==</span> pd, ]</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="do">## pupils who face both kinds of alternative in this period</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  tab  <span class="ot">&lt;-</span> <span class="fu">table</span>(e<span class="sc">$</span>ego, e<span class="sc">$</span>mynet_recip)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  both <span class="ot">&lt;-</span> <span class="fu">rownames</span>(tab)[<span class="fu">rowSums</span>(tab <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">==</span> <span class="dv">2</span>]</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  e    <span class="ot">&lt;-</span> e[e<span class="sc">$</span>ego <span class="sc">%in%</span> both, ]</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">period     =</span> pd,</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>             <span class="at">pupils     =</span> <span class="fu">nrow</span>(tab),</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">with_both  =</span> <span class="fu">length</span>(both),</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>             <span class="at">pooled     =</span> p<span class="sc">$</span>tieProb[p<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">1</span>] <span class="sc">-</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>                          p<span class="sc">$</span>tieProb[p<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">0</span>],</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>             <span class="at">within_ego =</span> <span class="fu">mean</span>(<span class="fu">sapply</span>(<span class="fu">split</span>(e, e<span class="sc">$</span>ego), <span class="cf">function</span>(d)</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>                            d<span class="sc">$</span>tieProb[d<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">1</span>] <span class="sc">-</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>                            d<span class="sc">$</span>tieProb[d<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">0</span>])))</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: right;">pupils</th>
+<th style="text-align: right;">with_both</th>
+<th style="text-align: right;">pooled</th>
+<th style="text-align: right;">within_ego</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">0.7326671</td>
+<td style="text-align: right;">0.7333263</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">0.5917293</td>
+<td style="text-align: right;">0.5930064</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><code>with_both</code> is how many pupils the balanced version can use, and it changes between periods. The two figures agree to about a thousandth here, so nothing in Step 3 turns on the choice — but that is a fact about this network, not a general one. It matters more when actors differ a lot in who is available to them.</p>
+<p>This only works for statistics that vary across an actor’s alternatives. Ego’s alcohol is the same for all of them, so that question can only be asked across actors.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="step-4-creation-and-maintenance-are-different-decisions" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="step-4-creation-and-maintenance-are-different-decisions"><span class="header-section-number">3.7</span> Step 4 — creation and maintenance are different decisions</h2>
+<p>The creation and maintenance margins are two different questions, and on the tie-probability scale they have very different answers: an existing tie is very likely to still be there after one ministep, an absent one very unlikely to have appeared. The <code>density</code> column tells the two apart — <code>+1</code> where the actor is deciding whether to create a tie, <code>-1</code> where the decision is whether to maintain one.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span>by_context</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: right;">mynet_density</th>
+<th style="text-align: right;">tieProb</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">q_025</th>
+<th style="text-align: right;">q_975</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">0.8435860</td>
+<td style="text-align: right;">0.0106478</td>
+<td style="text-align: right;">0.8227167</td>
+<td style="text-align: right;">0.8644554</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.0110679</td>
+<td style="text-align: right;">0.0005762</td>
+<td style="text-align: right;">0.0099386</td>
+<td style="text-align: right;">0.0121971</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">0.7676848</td>
+<td style="text-align: right;">0.0122543</td>
+<td style="text-align: right;">0.7436668</td>
+<td style="text-align: right;">0.7917028</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.0097705</td>
+<td style="text-align: right;">0.0005969</td>
+<td style="text-align: right;">0.0086006</td>
+<td style="text-align: right;">0.0109403</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Reciprocity is strongly associated with the tie already existing. So how much of the Step 3 gap is really “these dyads were already tied”?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="do">## the reciprocity gap: P(tie | reciprocated) - P(tie | not reciprocated)</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>gap <span class="ot">&lt;-</span> <span class="cf">function</span>(d) d<span class="sc">$</span>tieProb[d<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">1</span>] <span class="sc">-</span> d<span class="sc">$</span>tieProb[d<span class="sc">$</span>mynet_recip <span class="sc">==</span> <span class="dv">0</span>]</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>pooled <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(pred<span class="sc">$</span>by_recip)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(pred<span class="sc">$</span>by_both)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>b<span class="sc">$</span>decision <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(b<span class="sc">$</span>mynet_density <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">"tie creation"</span>, <span class="st">"tie maintenance"</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="do">## the same gap taken separately within each kind of decision</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>gaps <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">split</span>(b, <span class="fu">list</span>(b<span class="sc">$</span>period, b<span class="sc">$</span>decision), <span class="at">drop =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(s) <span class="fu">data.frame</span>(<span class="at">period =</span> s<span class="sc">$</span>period[<span class="dv">1</span>], <span class="at">decision =</span> s<span class="sc">$</span>decision[<span class="dv">1</span>],</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>                         <span class="at">reciprocity_gap =</span> <span class="fu">gap</span>(s))))</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">split</span>(pooled, pooled<span class="sc">$</span>period), <span class="cf">function</span>(s)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>               <span class="fu">data.frame</span>(<span class="at">period =</span> s<span class="sc">$</span>period[<span class="dv">1</span>], <span class="at">decision =</span> <span class="st">"unconditional"</span>,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>                          <span class="at">reciprocity_gap =</span> <span class="fu">gap</span>(s)))),</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>             gaps)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>out<span class="sc">$</span>reciprocity_gap <span class="ot">&lt;-</span> <span class="fu">round</span>(out<span class="sc">$</span>reciprocity_gap, <span class="dv">3</span>)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> out[<span class="fu">order</span>(out<span class="sc">$</span>period), ]</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(out) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>out</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: left;">decision</th>
+<th style="text-align: right;">reciprocity_gap</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">unconditional</td>
+<td style="text-align: right;">0.733</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">tie creation</td>
+<td style="text-align: right;">0.122</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">tie maintenance</td>
+<td style="text-align: right;">0.275</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">unconditional</td>
+<td style="text-align: right;">0.592</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">tie creation</td>
+<td style="text-align: right;">0.148</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">tie maintenance</td>
+<td style="text-align: right;">0.397</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Read the first row against the other two. Taking both kinds of decision together gives a <strong>larger</strong> gap than either kind on its own, so it is clearly not an average of them.</p>
+<p>The reason is that reciprocated and unreciprocated alternatives are not the same kind of decision. Where the reverse tie already exists, the tie itself usually exists too, so those are mostly maintenance decisions with a high probability. Where it does not, the tie usually does not exist either, so those are mostly creation decisions with a low probability. Comparing the two therefore compares existing ties against absent ones, with reciprocity varying alongside.</p>
+<p>Most of the apparent reciprocity gap in Step 3 was the state of the tie itself.</p>
+</section>
+<section id="step-5-the-adjusted-effect" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="step-5-the-adjusted-effect"><span class="header-section-number">3.8</span> Step 5 — the adjusted effect</h2>
+<p>Splitting by density accounts for one thing the comparison was picking up. The model contains others: transitivity, drinking, smoking, and the reciprocity × transitivity interaction. A dyad that reciprocates is usually also more transitively embedded.</p>
+<p>To isolate reciprocity we hold the decision situation fixed: same actor, same alternative, every other statistic where it actually is, and only reciprocity switched from 0 to 1. That contrast is the <strong>first difference</strong>.</p>
+<p>One decision is not an answer, though, so the first differences are averaged over all the decision situations in the data. That average is the <strong>average marginal effect</strong>, usually shortened to <strong>AME</strong> — the standard name for “the effect of switching this on, averaged over everyone it could apply to”. It is what the table below reports.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mtg <span class="ot">&lt;-</span> <span class="fu">make_marginal_targets</span>(ans, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">type =</span> <span class="st">"tieProb"</span>, <span class="at">level =</span> <span class="st">"period"</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">condition =</span> <span class="st">"density"</span>, <span class="at">includeDefaults =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>mtg <span class="ot">&lt;-</span> <span class="fu">set_target</span>(mtg, recip, <span class="at">contrast =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">name =</span> <span class="st">"recip_fd"</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Perturbing recip also moves the recip x transTrip1 interaction, because that</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="do">## interaction's change statistic is the product of its components'.  Declared</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="do">## once, applied wherever it is reached.</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>mtg <span class="ot">&lt;-</span> <span class="fu">set_dependency</span>(mtg, unspInt <span class="sc">~</span> recip<span class="sc">:</span>transTrip1, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>fd <span class="ot">&lt;-</span> <span class="fu">marginalEffects</span>(ans, mydata, <span class="at">targets =</span> mtg,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">control_uncertainty =</span> <span class="fu">set_postest_uncertainty_saom</span>(<span class="at">mode =</span> <span class="st">"delta"</span>))</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>fd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: right;">mynet_density</th>
+<th style="text-align: right;">firstDiff</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">q_025</th>
+<th style="text-align: right;">q_975</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">0.3969391</td>
+<td style="text-align: right;">0.0280845</td>
+<td style="text-align: right;">0.3418945</td>
+<td style="text-align: right;">0.4519837</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.1130943</td>
+<td style="text-align: right;">0.0220728</td>
+<td style="text-align: right;">0.0698325</td>
+<td style="text-align: right;">0.1563562</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">0.3786163</td>
+<td style="text-align: right;">0.0245392</td>
+<td style="text-align: right;">0.3305203</td>
+<td style="text-align: right;">0.4267123</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.0891941</td>
+<td style="text-align: right;">0.0159929</td>
+<td style="text-align: right;">0.0578486</td>
+<td style="text-align: right;">0.1205396</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="step-6-how-much-the-adjustment-moves-it" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="step-6-how-much-the-adjustment-moves-it"><span class="header-section-number">3.9</span> Step 6 — how much the adjustment moves it</h2>
+<p>Step 4 left three quantities in play: the unconditional gap, the gap within each kind of decision, and — from Step 5 — the adjusted first difference. The first was already shown to be an artefact of pooling two different decisions, so what is worth comparing is the last two, within each margin:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(fd)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>f<span class="sc">$</span>decision <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(f<span class="sc">$</span>mynet_density <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">"tie creation"</span>, <span class="st">"tie maintenance"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> <span class="fu">merge</span>(gaps, f[, <span class="fu">c</span>(<span class="st">"period"</span>, <span class="st">"decision"</span>, <span class="st">"firstDiff"</span>)],</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"period"</span>, <span class="st">"decision"</span>))</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">period     =</span> cmp<span class="sc">$</span>period,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">decision   =</span> cmp<span class="sc">$</span>decision,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">unadjusted =</span> <span class="fu">round</span>(cmp<span class="sc">$</span>reciprocity_gap, <span class="dv">3</span>),</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">adjusted   =</span> <span class="fu">round</span>(cmp<span class="sc">$</span>firstDiff, <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: left;">decision</th>
+<th style="text-align: right;">unadjusted</th>
+<th style="text-align: right;">adjusted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">tie creation</td>
+<td style="text-align: right;">0.122</td>
+<td style="text-align: right;">0.113</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">tie maintenance</td>
+<td style="text-align: right;">0.275</td>
+<td style="text-align: right;">0.397</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">tie creation</td>
+<td style="text-align: right;">0.148</td>
+<td style="text-align: right;">0.089</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">tie maintenance</td>
+<td style="text-align: right;">0.397</td>
+<td style="text-align: right;">0.379</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Same model, same ministep, same probability scale. The two differ in one respect only: whether the decision situation is held fixed. So the difference between them is what the raw comparison was picking up from other mechanisms.</p>
+<p>It does not always point the same way. For tie creation the unadjusted comparison overstates reciprocity, as expected. For tie maintenance it <em>understates</em> it: the adjusted effect is larger. That is not a mistake. Mutual ties differ from asymmetric ties in more than reciprocity — they are also more transitively embedded, and the reciprocity × transitivity interaction here is negative, which holds their raw survival advantage down. Holding the decision situation fixed puts it back.</p>
+<p>Adjustment does not only ever shrink things.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>What not to compare directly
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Step 1 descriptive difference is <strong>period-level</strong>: it compares two waves. The AME is <strong>per-opportunity</strong>: it refers to one ministep. They are not on the same footing, so the difference between them is not interpretable.</p>
+<p>Summing the contrast along the ministeps the model implies between one wave and the next does give a period-level quantity — the <strong>accumulated effect</strong> — but it is a cumulative count rather than a probability, so it does not simply close the gap either. Chapter 6 sets out what it does and does not support. For now, treat Step 1 as an anchor for intuition rather than as a number to subtract from.</p>
+</div>
+</div>
+<p>Everything above is evaluated at the <strong>observed</strong> waves. The model can instead average over its own <strong>model-implied decision sequences</strong> (<code>dynamic = TRUE</code>), which uses the whole simulated path between waves rather than only the observed states. Same functions, one extra argument.</p>
+</section>
+<section id="step-7-effects-are-not-constant" class="level2" data-number="3.10">
+<h2 data-number="3.10" class="anchored" data-anchor-id="step-7-effects-are-not-constant"><span class="header-section-number">3.10</span> Step 7 — effects are not constant</h2>
+<p>An AME answers “how much, on average”, and hides on whom and when. The underlying contrasts are <strong>context-conditional</strong> — they depend on the decision situation, and the average is only a summary of them. Stratifying on a feature of that situation gives a <strong>conditional AME</strong>: the same average, computed separately within each group of decisions, which shows the effect as a function of that feature.</p>
+<p>Here: what does one more two-path do, given how many are already there?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>stg <span class="ot">&lt;-</span> <span class="fu">make_marginal_targets</span>(ans, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">type =</span> <span class="st">"tieProb"</span>, <span class="at">level =</span> <span class="st">"period"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"density"</span>, <span class="st">"transTrip1"</span>),</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                             <span class="at">includeDefaults =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>stg <span class="ot">&lt;-</span> <span class="fu">set_target</span>(stg, transTrip1, <span class="at">diff =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">"tt"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>stg <span class="ot">&lt;-</span> <span class="fu">set_dependency</span>(stg, unspInt <span class="sc">~</span> recip<span class="sc">:</span>transTrip1, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>shape <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">marginalEffects</span>(ans, mydata, <span class="at">targets =</span> stg,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">control_uncertainty =</span> <span class="fu">set_postest_uncertainty_saom</span>(<span class="at">mode =</span> <span class="st">"delta"</span>)))</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>shape <span class="ot">&lt;-</span> shape[shape<span class="sc">$</span>mynet_density <span class="sc">!=</span> <span class="dv">0</span>, ]</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>shape<span class="sc">$</span>context <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(shape<span class="sc">$</span>mynet_density <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">"creation"</span>, <span class="st">"maintenance"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(shape, <span class="fu">aes</span>(mynet_transTrip1, firstDiff, <span class="at">ymin =</span> q_025, <span class="at">ymax =</span> q_975,</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">colour =</span> context, <span class="at">fill =</span> context)) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">0.7</span>) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">1.8</span>) <span class="sc">+</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(period <span class="sc">~</span> context, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">labeller =</span> label_both) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">creation =</span> CRE, <span class="at">maintenance =</span> MNT),</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">creation =</span> CRE, <span class="at">maintenance =</span> MNT),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"two-paths already present"</span>, <span class="at">y =</span> <span class="st">"effect of one more two-path"</span>,</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"95% delta-method intervals"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-worked-example_files/figure-html/shape-plot-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Read it: is the line flat (a constant effect), rising (self-reinforcing), or falling (saturating)? And does it do the same in both panels? A single average tells you none of this — this is the nonlinear, context-dependent heterogeneity that the average is a summary of.</p>
+<p>The same idea with a binary feature: does reciprocity change what a two-path does?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>mtg2 <span class="ot">&lt;-</span> <span class="fu">make_marginal_targets</span>(ans, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">type =</span> <span class="st">"tieProb"</span>, <span class="at">level =</span> <span class="st">"period"</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"density"</span>, <span class="st">"recip"</span>),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">includeDefaults =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>mtg2 <span class="ot">&lt;-</span> <span class="fu">set_target</span>(mtg2, transTrip1, <span class="at">diff =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">"tt"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>mtg2 <span class="ot">&lt;-</span> <span class="fu">set_dependency</span>(mtg2, unspInt <span class="sc">~</span> recip<span class="sc">:</span>transTrip1, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">marginalEffects</span>(ans, mydata, <span class="at">targets =</span> mtg2,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">control_uncertainty =</span> <span class="fu">set_postest_uncertainty_saom</span>(<span class="at">mode =</span> <span class="st">"delta"</span>)))</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> mod[mod<span class="sc">$</span>mynet_density <span class="sc">!=</span> <span class="dv">0</span>, ]</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>mod<span class="sc">$</span>context <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(mod<span class="sc">$</span>mynet_density <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">"creation"</span>, <span class="st">"maintenance"</span>)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>mod<span class="sc">$</span>recip   <span class="ot">&lt;-</span> <span class="fu">factor</span>(mod<span class="sc">$</span>mynet_recip, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>                      <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"not reciprocated"</span>, <span class="st">"reciprocated"</span>))</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mod, <span class="fu">aes</span>(recip, firstDiff, <span class="at">ymin =</span> q_025, <span class="at">ymax =</span> q_975,</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">colour =</span> context)) <span class="sc">+</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>() <span class="sc">+</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(period <span class="sc">~</span> context, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">labeller =</span> label_both) <span class="sc">+</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">creation =</span> CRE, <span class="at">maintenance =</span> MNT),</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>                      <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"effect of one more two-path"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-worked-example_files/figure-html/mod-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="step-8-the-interaction-as-a-second-difference" class="level2" data-number="3.11">
+<h2 data-number="3.11" class="anchored" data-anchor-id="step-8-the-interaction-as-a-second-difference"><span class="header-section-number">3.11</span> Step 8 — the interaction, as a second difference</h2>
+<p>The plot above suggests the two-path effect differs by reciprocity. The <strong>second difference</strong> states that as one number with an interval: how much does the effect of one more two-path change when the tie goes from unreciprocated to reciprocated?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sdt <span class="ot">&lt;-</span> <span class="fu">make_marginal_targets</span>(ans, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">type =</span> <span class="st">"tieProb"</span>, <span class="at">level =</span> <span class="st">"period"</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">condition =</span> <span class="st">"density"</span>, <span class="at">includeDefaults =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>sdt <span class="ot">&lt;-</span> <span class="fu">set_second_diff</span>(sdt,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(<span class="at">transTrip1 =</span> <span class="fu">list</span>(<span class="at">diff =</span> <span class="dv">1</span>),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                            <span class="at">recip      =</span> <span class="fu">list</span>(<span class="at">contrast =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"tt_x_recip"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>sdt <span class="ot">&lt;-</span> <span class="fu">set_dependency</span>(sdt, unspInt <span class="sc">~</span> recip<span class="sc">:</span>transTrip1, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="fu">marginalEffects</span>(ans, mydata, <span class="at">targets =</span> sdt,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">control_uncertainty =</span> <span class="fu">set_postest_uncertainty_saom</span>(<span class="at">mode =</span> <span class="st">"delta"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: right;">mynet_density</th>
+<th style="text-align: right;">secondDiff</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">q_025</th>
+<th style="text-align: right;">q_975</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">-0.2019910</td>
+<td style="text-align: right;">0.0323402</td>
+<td style="text-align: right;">-0.2653766</td>
+<td style="text-align: right;">-0.1386054</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.1092922</td>
+<td style="text-align: right;">0.0608028</td>
+<td style="text-align: right;">-0.0098790</td>
+<td style="text-align: right;">0.2284634</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">-0.1878167</td>
+<td style="text-align: right;">0.0313086</td>
+<td style="text-align: right;">-0.2491804</td>
+<td style="text-align: right;">-0.1264531</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.0909352</td>
+<td style="text-align: right;">0.0509861</td>
+<td style="text-align: right;">-0.0089957</td>
+<td style="text-align: right;">0.1908661</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>The dependency is declared once and reaches both steps of the second difference, so the cross term falls out of the arithmetic rather than being rebuilt by hand. And, as with everything else here, the answer differs between tie creation and tie maintenance.</p>
+</section>
+<section id="beyond-this-walkthrough" class="level2" data-number="3.12">
+<h2 data-number="3.12" class="anchored" data-anchor-id="beyond-this-walkthrough"><span class="header-section-number">3.12</span> Beyond this walkthrough</h2>
+<p>The walkthrough kept to one kind of target — a statistic that varies across ego’s alternatives — evaluated at the observed waves. Two things beyond that are worth knowing about, neither of which was covered in the session.</p>
+<p><strong>An ego statistic needs a different contrast.</strong> Every target so far has been a statistic that varies across ego’s alternatives — reciprocity, two-paths. An effect that only depends on ego’s covariate value does not: <code>egoX</code> for alcohol is the same number for every alternative this actor has, so it cannot be moved for one alter on its own. The perturbation has to shift ego’s whole choice set at once, raising every creation alternative and lowering every dissolution one.</p>
+<p>That is worked out from the effect, so nothing extra has to be asked for. Setting a target on an ego effect switches the perturbation to the ego-wide form and brings the probability-mass contrasts along with it. Alcohol is a graded 1–5 scale rather than an indicator, so the contrast to ask for is <code>diff = 1</code> — one unit more drinking — rather than a <span class="math inline">\(0 \to 1\)</span> switch:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>etg <span class="ot">&lt;-</span> <span class="fu">make_marginal_targets</span>(ans, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">type =</span> <span class="st">"tieProb"</span>, <span class="at">level =</span> <span class="st">"period"</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">includeDefaults =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>etg <span class="ot">&lt;-</span> <span class="fu">set_target</span>(etg, egoX, <span class="at">covar1 =</span> <span class="st">"alcohol"</span>, <span class="at">diff =</span> <span class="dv">1</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">name =</span> <span class="st">"alcohol_ego"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">marginalEffects</span>(ans, mydata, <span class="at">targets =</span> etg,</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">control_uncertainty =</span> <span class="fu">set_postest_uncertainty_saom</span>(<span class="at">mode =</span> <span class="st">"bootstrap"</span>,</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">nsim =</span> <span class="dv">200</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: right;">firstDiff</th>
+<th style="text-align: right;">massCreation</th>
+<th style="text-align: right;">massDissolution</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">q_025</th>
+<th style="text-align: right;">q_975</th>
+<th style="text-align: right;">massCreation_SE</th>
+<th style="text-align: right;">massCreation_q_025</th>
+<th style="text-align: right;">massCreation_q_975</th>
+<th style="text-align: right;">massDissolution_SE</th>
+<th style="text-align: right;">massDissolution_q_025</th>
+<th style="text-align: right;">massDissolution_q_975</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.0001255</td>
+<td style="text-align: right;">0.0032932</td>
+<td style="text-align: right;">-0.0028548</td>
+<td style="text-align: right;">0.0010974</td>
+<td style="text-align: right;">-0.0017603</td>
+<td style="text-align: right;">0.0021230</td>
+<td style="text-align: right;">0.0287830</td>
+<td style="text-align: right;">-0.0454980</td>
+<td style="text-align: right;">0.0555640</td>
+<td style="text-align: right;">0.0249921</td>
+<td style="text-align: right;">-0.0484610</td>
+<td style="text-align: right;">0.0407555</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.0001160</td>
+<td style="text-align: right;">0.0029979</td>
+<td style="text-align: right;">-0.0026844</td>
+<td style="text-align: right;">0.0010239</td>
+<td style="text-align: right;">-0.0015264</td>
+<td style="text-align: right;">0.0020454</td>
+<td style="text-align: right;">0.0264505</td>
+<td style="text-align: right;">-0.0391834</td>
+<td style="text-align: right;">0.0525016</td>
+<td style="text-align: right;">0.0237206</td>
+<td style="text-align: right;">-0.0477228</td>
+<td style="text-align: right;">0.0360928</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Three numbers instead of one, answering different questions. The first difference (<code>firstDiff</code>) is the per-tie one: how much one focal friendship’s probability moves. The two probability-mass contrasts (<code>massCreation</code>, <code>massDissolution</code>) are the totals across the whole choice set — how much probability moves into forming <em>some</em> friendship and out of dropping <em>one</em>. Their difference is the effect on expected degree change, which for a sender effect is arguably a better representation of its impact than the average first difference. Each estimate carries its own interval, named after the quantity it belongs to.</p>
+<p>One thing to keep in mind about <code>diff</code>: it shifts every actor by one unit from wherever they start, so a pupil already at 5 is moved to 6 — a value the scale never takes. Holding the contrast the same size for everyone is what makes the average interpretable, but it does mean part of that average is evaluated off the observed range. Worth remembering whenever a covariate has a hard ceiling or floor.</p>
+<p>The perturbation mode can be overridden — <code>set_target(..., perturbType = "alter")</code>, and <code>massContrasts</code> to force the extra columns on or off — though there is usually no reason to, beyond something specific such as comparing ego and alter effects directly.</p>
+<p><strong>Averaging over model-implied ministeps.</strong> <code>dynamic = TRUE</code> on the targets replaces the observed-wave decision situations with the ones the fitted model says occur between waves. It needs an algorithm to simulate with, which goes in <code>control_algo</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>dtg <span class="ot">&lt;-</span> <span class="fu">make_marginal_targets</span>(ans, <span class="at">effects =</span> myeff, <span class="at">depvar =</span> <span class="st">"mynet"</span>,</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">type =</span> <span class="st">"tieProb"</span>, <span class="at">level =</span> <span class="st">"period"</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">dynamic =</span> <span class="cn">TRUE</span>, <span class="at">includeDefaults =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>dtg <span class="ot">&lt;-</span> <span class="fu">set_target</span>(dtg, recip, <span class="at">contrast =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">name =</span> <span class="st">"recip_fd"</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>dtg <span class="ot">&lt;-</span> <span class="fu">set_dependency</span>(dtg, unspInt <span class="sc">~</span> recip<span class="sc">:</span>transTrip1, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="fu">marginalEffects</span>(ans, mydata, <span class="at">targets =</span> dtg,</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">control_algo =</span> <span class="fu">set_postest_algo_saom</span>(<span class="at">algorithm =</span> myalgo, <span class="at">n3 =</span> <span class="dv">100</span>,</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">verbose =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">period</th>
+<th style="text-align: right;">firstDiff</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">q_025</th>
+<th style="text-align: right;">q_975</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.1052566</td>
+<td style="text-align: right;">0.0178219</td>
+<td style="text-align: right;">0.0703264</td>
+<td style="text-align: right;">0.1401868</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.1016654</td>
+<td style="text-align: right;">0.0171564</td>
+<td style="text-align: right;">0.0680395</td>
+<td style="text-align: right;">0.1352914</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Compare with the observed-wave answer from Step 5. When the two agree, the observed-wave summary is not being driven by a few atypical situations.</p>
+<p>The standard error here is still analytic, with one addition: averaging over simulated chains means the chains themselves depend on the parameters, so a correction for that is included alongside the usual delta-method term. It happens by itself for a dynamic target.</p>
+</section>
+<section id="where-this-leaves-us" class="level2" data-number="3.13">
+<h2 data-number="3.13" class="anchored" data-anchor-id="where-this-leaves-us"><span class="header-section-number">3.13</span> Where this leaves us</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>question</th>
+<th>quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>are ties more prevalent where the condition holds?</td>
+<td>descriptive difference (Step 1)</td>
+</tr>
+<tr class="even">
+<td>what does the model work from?</td>
+<td>change statistics (Step 2)</td>
+</tr>
+<tr class="odd">
+<td>what does the model say about one decision?</td>
+<td>predicted probabilities (Step 3)</td>
+</tr>
+<tr class="even">
+<td>is that just creation versus maintenance?</td>
+<td>split by margin (Step 4)</td>
+</tr>
+<tr class="odd">
+<td>what does <em>this</em> mechanism contribute?</td>
+<td>first difference, averaged into an AME (Step 5)</td>
+</tr>
+<tr class="even">
+<td>how much of the raw gap is the mechanism?</td>
+<td>compare the two (Step 6)</td>
+</tr>
+<tr class="odd">
+<td>is the effect constant?</td>
+<td>conditional AMEs (Step 7)</td>
+</tr>
+<tr class="even">
+<td>do two mechanisms interact?</td>
+<td>second difference (Step 8)</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./02-marginal-effects.html" class="pagination-link" aria-label="Marginal effects">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Marginal effects</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./04-minimal-meta-analysis.html" class="pagination-link" aria-label="A meta-analysis at the smallest useful size">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">A meta-analysis at the smallest useful size</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

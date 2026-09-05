@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Marginal effects – Interpreting Model Estimates</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./03-worked-example.html" rel="next">
+<link href="./01-interpretation.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-27c261d06b905028a18691de25d09dde.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02-marginal-effects.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Marginal effects</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Interpreting Model Estimates</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About this material</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-interpretation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">What a coefficient tells you</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-marginal-effects.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Marginal effects</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-worked-example.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Interpreting a SAOM</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-minimal-meta-analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">A meta-analysis at the smallest useful size</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-meta-analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Marginal effects across 17 school classes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./99-outlook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">What is settled, and what is current work</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-general-idea" id="toc-the-general-idea" class="nav-link active" data-scroll-target="#the-general-idea"><span class="header-section-number">2.1</span> The general idea</a></li>
+  <li><a href="#which-situations-do-you-evaluate-at" id="toc-which-situations-do-you-evaluate-at" class="nav-link" data-scroll-target="#which-situations-do-you-evaluate-at"><span class="header-section-number">2.2</span> Which situations do you evaluate at?</a></li>
+  <li><a href="#marginal-effects-in-network-models" id="toc-marginal-effects-in-network-models" class="nav-link" data-scroll-target="#marginal-effects-in-network-models"><span class="header-section-number">2.3</span> Marginal effects in network models</a>
+  <ul class="collapse">
+  <li><a href="#existing-work" id="toc-existing-work" class="nav-link" data-scroll-target="#existing-work"><span class="header-section-number">2.3.1</span> Existing work</a></li>
+  </ul></li>
+  <li><a href="#what-the-model-decides" id="toc-what-the-model-decides" class="nav-link" data-scroll-target="#what-the-model-decides"><span class="header-section-number">2.4</span> What the model decides</a></li>
+  <li><a href="#what-the-model-sees" id="toc-what-the-model-sees" class="nav-link" data-scroll-target="#what-the-model-sees"><span class="header-section-number">2.5</span> What the model sees</a></li>
+  <li><a href="#two-probabilities-to-keep-apart" id="toc-two-probabilities-to-keep-apart" class="nav-link" data-scroll-target="#two-probabilities-to-keep-apart"><span class="header-section-number">2.6</span> Two probabilities to keep apart</a></li>
+  <li><a href="#first-differences" id="toc-first-differences" class="nav-link" data-scroll-target="#first-differences"><span class="header-section-number">2.7</span> First differences</a></li>
+  <li><a href="#everything-shares-a-denominator" id="toc-everything-shares-a-denominator" class="nav-link" data-scroll-target="#everything-shares-a-denominator"><span class="header-section-number">2.8</span> Everything shares a denominator</a></li>
+  <li><a href="#interactions-as-second-differences" id="toc-interactions-as-second-differences" class="nav-link" data-scroll-target="#interactions-as-second-differences"><span class="header-section-number">2.9</span> Interactions as second differences</a></li>
+  <li><a href="#which-average" id="toc-which-average" class="nav-link" data-scroll-target="#which-average"><span class="header-section-number">2.10</span> Which average?</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Marginal effects</span></h1>
+<p class="subtitle lead">What they are in general, and what they have to become for the SAOM</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="the-general-idea" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="the-general-idea"><span class="header-section-number">2.1</span> The general idea</h2>
+<p>A marginal effect (for a discrete choice model) asks how a predicted probability changes when a predictor changes. Three variants are standard tools for reporting non-linear models on the outcome scale <span class="citation" data-cites="LongMustillo2021">(<a href="references.html#ref-LongMustillo2021" role="doc-biblioref">Long and Mustillo 2021</a>)</span>:</p>
+<p><strong>First difference.</strong> Compare the predicted probability at two values of the predictor — usually one unit apart, or a stated contrast such as 0 versus 1.</p>
+<p><strong>Partial derivative.</strong> The limit of that comparison for vanishingly small changes. Defined only for (quasi-)continuous predictors.</p>
+<p><strong>Second difference.</strong> Take the first difference of one predictor, then ask whether it differs by the level of another. This is the probability-scale version of an interaction.</p>
+<p>For the SAOM, discrete differences are the operative quantity. Almost every effect statistic is a count or an indicator (how many two-paths, whether the tie is reciprocated, whether ego and alter match) so a step of one unit, or a <span class="math inline">\(0 \to 1\)</span> contrast, is the natural comparison and the derivative plays little role.</p>
+</section>
+<section id="which-situations-do-you-evaluate-at" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="which-situations-do-you-evaluate-at"><span class="header-section-number">2.2</span> Which situations do you evaluate at?</h2>
+<p>A marginal effect is not one number. There is one</p>
+<ul>
+<li>for every predictor,</li>
+<li>at every combination — or every relevant combination — of the other predictors,</li>
+<li>for every observation.</li>
+</ul>
+<p>A summary therefore has to say where it was evaluated, and three conventions are standard.</p>
+<ul>
+<li><strong>MEM</strong> — the marginal effect at the mean of every predictor.</li>
+<li><strong>MER</strong> — the effect at representative values chosen by the researcher.</li>
+<li><strong>AME</strong> — the effect computed at every observation, then averaged.</li>
+</ul>
+<p>For the SAOM there is no meaningful mean decision situation, so MEM has no real counterpart: a choice set has to be an actual network with ties actually present or absent, and averaged statistics describe no situation an actor could face. MER does carry over, as evaluation at a <em>stipulated</em> decision situation — this is the construction <span class="citation" data-cites="Duxbury2026">Duxbury (<a href="references.html#ref-Duxbury2026" role="doc-biblioref">2026b</a>)</span> builds on for ERGMs, contrasting potential ties whose statistic profiles are set by the researcher rather than taken from the data. AME is what is reported here, and the innocuous-sounding phrase “averaged over all observations” is where the SAOM’s real question lives, since ministeps are not observed. <em>Which average?</em>, at the end of this chapter, takes that up.</p>
+</section>
+<section id="marginal-effects-in-network-models" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="marginal-effects-in-network-models"><span class="header-section-number">2.3</span> Marginal effects in network models</h2>
+<p>Both major model families relate to a familiar regression form, and the relation is not the same in the two cases <span class="citation" data-cites="Glasgow2022 Train2009">(<a href="references.html#ref-Glasgow2022" role="doc-biblioref">Glasgow 2022</a>; <a href="references.html#ref-Train2009" role="doc-biblioref">Train 2009</a>)</span>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>ERGM</th>
+<th>SAOM</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>unit of analysis</td>
+<td>the tie</td>
+<td>the actor’s decision</td>
+</tr>
+<tr class="even">
+<td>regression analogue</td>
+<td><strong>binary</strong> logistic</td>
+<td><strong>multinomial</strong> (conditional) logit</td>
+</tr>
+<tr class="odd">
+<td>data</td>
+<td>cross-sectional</td>
+<td>longitudinal</td>
+</tr>
+<tr class="even">
+<td>marginal effects</td>
+<td>well developed</td>
+<td>developed here</td>
+</tr>
+</tbody>
+</table>
+<p>This distinction does real work later. The ERGM’s tie-level form is a binary logit — the conditional log-odds of one tie given the rest of the network — which is why the ERGM marginal-effects literature could build directly on intuitions from the long-running binary-logit debate in sociology and epidemiology. The SAOM cannot: it needs the conditional-logit choice set <em>and</em> the opportunity structure, two steps away from the familiar case rather than one.</p>
+<section id="existing-work" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="existing-work"><span class="header-section-number">2.3.1</span> Existing work</h3>
+<p>For ERGMs, Duxbury and colleagues have developed probability-scale effect sizes <span class="citation" data-cites="Duxbury2023 DuxburyWertsching2023">(<a href="references.html#ref-Duxbury2023" role="doc-biblioref">Duxbury 2023</a>; <a href="references.html#ref-DuxburyWertsching2023" role="doc-biblioref">Duxbury and Wertsching 2023</a>)</span>, available in the <code>ergMargins</code> package <span class="citation" data-cites="Duxbury2023a">(<a href="references.html#ref-Duxbury2023a" role="doc-biblioref">Duxbury 2026a</a>)</span>. <span class="citation" data-cites="Duxbury2026">Duxbury (<a href="references.html#ref-Duxbury2026" role="doc-biblioref">2026b</a>)</span> extends this to structural terms and adds a further argument: a higher-order structure cannot change without changing its lower-order building blocks, so “holding all else constant” readings of structural coefficients are hard to sustain.</p>
+<p>For SAOMs, the closest existing tool is <em>relative importance</em> <span class="citation" data-cites="IndlekoferBrandes2013">(<a href="references.html#ref-IndlekoferBrandes2013" role="doc-biblioref">Indlekofer and Brandes 2013</a>)</span>, which compares how much different effects contribute to an actor’s decision by modifying model coefficients and analyzing changes in probabilities. It is a complement rather than a marginal effect: it does not report a probability contrast under a stated counterfactual in regard to the predictors.</p>
+<p>Effects in a SAOM are related to one another too, so the same question arises here: perturb one change statistic and another in the same specification may have to move with it. So far this is resolved for direct logical relationships — multiplicative interactions, and effects built from the same covariate — which are declared explicitly and then carried through the perturbation wherever it reaches; Chapter 3 shows it in use. Beyond those, it remains a specification-specific question, and preferring elementary effects keeps the structure easier to see.</p>
+</section>
+</section>
+<section id="what-the-model-decides" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="what-the-model-decides"><span class="header-section-number">2.4</span> What the model decides</h2>
+<p>A SAOM does not model the jump from one observed wave to the next directly. It models the process <em>between</em> waves as a sequence of <strong>ministeps</strong>: one actor gets an opportunity, looks at every alternative open to them, and toggles one tie — creating a new one or dropping one they have — or changes nothing.</p>
+<p>Every quantity below therefore sits at one ministep and asks: for this actor, facing this alternative, what happens next?</p>
+<p>The model has two components: the <strong>rate function</strong> governs how often opportunities arrive and how they are distributed over the actors, the <strong>objective function</strong> what an actor chooses once they have one. The rate at which a specific tie actually changes is the product, <span class="math inline">\(\lambda_i\,p_{ij}\)</span>.</p>
+<p>Everything in this chapter is the second factor — a probability <em>per decision opportunity</em>, with <span class="math inline">\(\lambda\)</span> held out. Throughout we take the usual case of a rate that is constant within a period, so that opportunities are spread evenly over actors and <span class="math inline">\(\lambda_i\)</span> is just <span class="math inline">\(\lambda\)</span>. Chapter 6 returns to what happens when the rate is put back in.</p>
+</section>
+<section id="what-the-model-sees" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="what-the-model-sees"><span class="header-section-number">2.5</span> What the model sees</h2>
+<p>The underlying variables are the network state and the covariates, but they reach the decision only through the chosen <strong>effect statistics</strong> <span class="math inline">\(s_{k,ij}(x)\)</span>: the value effect <span class="math inline">\(k\)</span> takes for actor <span class="math inline">\(i\)</span> if alternative <span class="math inline">\(j\)</span> is chosen.</p>
+<p>Weighted by the parameters, these make up the <strong>objective function</strong> — how attractive alternative <span class="math inline">\(j\)</span> is to actor <span class="math inline">\(i\)</span>:</p>
+<p><span class="math display">\[f_{ij}(x) = \sum_k \beta_k\, s_{k,ij}(x)\]</span></p>
+<p>Written this way <span class="math inline">\(f\)</span> is an <strong>evaluation function</strong>: the statistics describe the network the decision leads to, so the same weights apply whether the actor is creating a tie or keeping one. RSiena’s objective function is more general — it can carry separate <em>creation</em> and <em>endowment</em> terms that apply to only one of those two moves — but everything here assumes the evaluation-only case, which is the common one. Which statistics are available is catalogued in chapter 13 of the manual <span class="citation" data-cites="SienaManual">(<a href="references.html#ref-SienaManual" role="doc-biblioref">Ripley et al. 2026</a>)</span>.</p>
+<p>The choice probabilities then follow as a multinomial logit over the whole choice set: all <span class="math inline">\(n-1\)</span> possible toggles, plus the option to change nothing.</p>
+<p><span class="math display">\[p_{ij}(x) = \frac{\exp f_{ij}(x)}{\sum_h \exp f_{ih}(x)}\]</span></p>
+<p>Two distinct questions can be asked about a single tie, and the distinction matters for what follows:</p>
+<ul>
+<li>the <strong>toggle statistic</strong> <span class="math inline">\(\tau_{k,ij}(x)\)</span> — <em>given the current state, how much would the objective function move if this tie were flipped?</em></li>
+<li>the <strong>change statistic</strong> <span class="math inline">\(\delta_{k,ij}(x)\)</span> — <em>how much more preferable is the network with this tie than the network without it?</em></li>
+</ul>
+<p>The second is <strong>invariant to the decision margin</strong>. It compares presence with absence, so it gives the same answer whether the actor is contemplating creating the tie or keeping one they already have. The first does not: flipping an absent tie adds a configuration while flipping a present one removes it, so <span class="math inline">\(\tau\)</span> changes sign between the two situations and <span class="math inline">\(\delta\)</span> does not.</p>
+<p><span class="math display">\[\delta_{k,ij}(x) = \begin{cases}\hphantom{-}\tau_{k,ij}(x) &amp; x_{ij} = 0\\ -\tau_{k,ij}(x) &amp; x_{ij} = 1\end{cases}\]</span></p>
+<p>That invariance is what allows creation and maintenance to be discussed on one footing, and it is <span class="math inline">\(\delta\)</span> that the counterfactuals below move. The objective function is sometimes written as <span class="math inline">\((1-2x_{ij}) \sum_k \beta_k \delta_{k,ij}(x)\)</span>, which just means that we add for creation decisions and subtract for maintenance ones.</p>
+</section>
+<section id="two-probabilities-to-keep-apart" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="two-probabilities-to-keep-apart"><span class="header-section-number">2.6</span> Two probabilities to keep apart</h2>
+<p>Because a toggle means opposite things depending on whether the tie is there:</p>
+<p><strong>Toggle probability</strong> <span class="math inline">\(p_{ij}\)</span> — the probability the actor picks alternative <span class="math inline">\(j\)</span>. For an absent tie that creates it; for a present tie, dissolves it.</p>
+<p><strong>Tie probability</strong> <span class="math inline">\(r_{ij}\)</span> — the probability the tie <em>exists</em> after the ministep: <span class="math inline">\(p_{ij}\)</span> when the tie is absent, and <span class="math inline">\(1 - p_{ij}\)</span> when it is present.</p>
+<p>The second is usually the one to report, because “higher means more likely to be there” then reads the same way in both cases.</p>
+</section>
+<section id="first-differences" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="first-differences"><span class="header-section-number">2.7</span> First differences</h2>
+<p>To isolate one mechanism, hold the decision situation fixed — same actor, same alternative, every other statistic exactly where it is — and change only the focal change statistic. The resulting shift in probability is the <strong>first difference</strong>.</p>
+<p>Evaluated where the tie is absent, this is the effect on the probability of creating it. Evaluated where the tie is present, it is the effect on the probability of keeping it. We call these the <strong>creation margin</strong> and the <strong>maintenance margin</strong>, and they routinely differ a lot: in a sparse network almost every alternative is a potential creation with a small baseline probability, while existing ties are far less and usually well embedded and likely to survive.</p>
+<p>These are two margins of one evaluation function, not the separate creation and endowment terms RSiena can also fit. Nothing is estimated twice: the same contrast is simply evaluated in the two places a tie decision can sit. Where a specification <em>does</em> include creation or endowment effects, they enter the objective function and are carried along like any other effect.</p>
+<p>Averaging first differences over many decision situations gives an <strong>average marginal effect</strong>, the AME from the start of this chapter.</p>
+</section>
+<section id="everything-shares-a-denominator" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="everything-shares-a-denominator"><span class="header-section-number">2.8</span> Everything shares a denominator</h2>
+<div id="fig-cross-alt" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cross-alt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/choice_recip_shift_all_alts.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cross-alt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: Shifting the reciprocity statistic of one alternative changes its own toggle probability and, through the shared denominator, the probability of every other alternative as well. Left: predicted probabilities. Right: the corresponding changes.
+</figcaption>
+</figure>
+</div>
+<p>All alternatives sit in the same denominator, so making one toggle more attractive does not only raise its own probability: it pushes probability mass away from every other alternative, including “change nothing”.</p>
+<p>Two consequences matter for reading results. Probabilities live under a <span class="math inline">\(1/K\)</span> geometry, where <span class="math inline">\(K\)</span> is the size of the choice set — in a class of 50 that is a very different part of the curve from the region around 0.5 where binary-logit intuitions are usually formed.</p>
+<p>And the compensation familiar from binary logit — where a smaller coefficient is partly offset by the baseline moving to a steeper part of the curve — should not be assumed here. Multinomial choice geometry does not reproduce it in general: added noise moves probabilities toward <span class="math inline">\(1/K\)</span> rather than toward 0.5, and what that does to the offset depends on where the baseline sits. The SAOM is more than a conditional logit besides — the rate parameter absorbs part of any change in scale as well — so whether an offset remains is a question about the fitted model rather than something the geometry settles.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Ego covariates require a different contrast
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The first difference above moves the statistic of <strong>one</strong> alternative, which suits statistics that vary across alters — reciprocity, transitive triplets, covariate similarity.</p>
+<p>An ego covariate is the same for all of ego’s alternatives, so the <strong>perturbation</strong> has to be ego-wide: raising ego’s attribute shifts every creation alternative up and every dissolution alternative down at once for a positive coefficient, leaving “change nothing” where it is. Moving one alternative on its own would not correspond to any change in ego’s attribute. This is worked out from the effect itself and applied without being asked for, and can be overridden where there is reason to.</p>
+<p>What you get back by default is still a per-tie first difference, and it is interpretable: the average change in one focal tie’s probability under that ego-wide shift. It is a limited summary for a sender effect, though, since a uniform shift across the choice set also changes preferable other alternatives are.</p>
+<p>The fuller summary is a <strong>probability-mass contrast</strong>: how much total probability moves into creating any tie, and out of dropping any tie. Because exactly one alternative is chosen per ministep, the creation mass is simultaneously the probability that ego creates a tie and the expected number of creations — so the difference between the two mass contrasts is the effect on expected degree change.</p>
+<div id="fig-ego-mass" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ego-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/choice_egoX_masses.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ego-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: The same ego contrast summarised as probability mass: how much moves into creating some tie, how much out of dropping one, and how much to changing nothing.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="interactions-as-second-differences" class="level2" data-number="2.9">
+<h2 data-number="2.9" class="anchored" data-anchor-id="interactions-as-second-differences"><span class="header-section-number">2.9</span> Interactions as second differences</h2>
+<p>Does the effect of one mechanism depend on the level of another? Take the first difference twice — once at each level of the moderator — and subtract. That <strong>second difference</strong> is the probability-scale statement of an interaction.</p>
+<p>It can be non-zero for three different reasons:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>what it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>conceptual</td>
+<td>a genuine interaction term in the objective function</td>
+</tr>
+<tr class="even">
+<td>mechanical</td>
+<td>non-linearity alone: the same latent shift maps to different probability changes at different baselines</td>
+</tr>
+<tr class="odd">
+<td>scaling-induced</td>
+<td>the effective noise level differs across contexts, rescaling the same latent contrast</td>
+</tr>
+</tbody>
+</table>
+<p>When a coefficient and a second difference disagree in sign, the second reason is the first explanation to check — and it is substantively interesting rather than a problem, since it says the mechanisms combine differently where baseline probabilities differ.</p>
+<p><a href="#fig-sign-swap" class="quarto-xref">Figure&nbsp;<span>2.3</span></a> is that case drawn, and it does not take extreme values to produce. With a baseline of <span class="math inline">\(-2.0\)</span>, one mechanism worth <span class="math inline">\(1.2\)</span>, another worth <span class="math inline">\(1.8\)</span> and an interaction of <span class="math inline">\(-0.2\)</span>, the two mechanisms acting together raise the probability by <span class="math inline">\(0.571\)</span>, where their two separate increments sum to only <span class="math inline">\(0.522\)</span>. The interaction is <span class="math inline">\(-0.2\)</span> as a coefficient and <span class="math inline">\(+0.05\)</span> as a second difference.</p>
+<div id="fig-sign-swap" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sign-swap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/interaction_sign_swap.png" class="img-fluid figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sign-swap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.3: One interaction, negative as a coefficient and positive as a second difference. The grey curve is the logistic link, the horizontal axis the objective function and the vertical axis the probability. Yellow and blue trace the two mechanisms taken one at a time. Violet is the naive combination — the two coefficients added on the horizontal axis, the two probability increments added on the vertical one. Green is where the model actually lands once the negative interaction is applied: to the <em>left</em> of violet, because the coefficient is negative, and yet <em>above</em> it, because the probability effect is positive. The green arrows mark the two corrections.
+</figcaption>
+</figure>
+</div>
+<p>Differences in scaling is harder to evaluate for latent decisions but is still a potential factor to keep into account e.g.&nbsp;when comparing between data sets and contexts and will not necessarily differ between the coefficient and probability scale in SAOM.</p>
+</section>
+<section id="which-average" class="level2" data-number="2.10">
+<h2 data-number="2.10" class="anchored" data-anchor-id="which-average"><span class="header-section-number">2.10</span> Which average?</h2>
+<p>The contrasts above are defined for one dyad in one decision situation. Getting to an interpretable summary efefct size means climbing a ladder, and each rung is a choice to state.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-ladder" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-ladder">flowchart LR
+  A["&lt;b&gt;dyad&lt;/b&gt;&lt;br/&gt;one alternative"] --&gt;|"average over&lt;br/&gt;alters"| B["&lt;b&gt;actor&lt;/b&gt;&lt;br/&gt;one decision situation"]
+  B --&gt;|"average over&lt;br/&gt;decision situations"| C["&lt;b&gt;effect size&lt;/b&gt;&lt;br/&gt;AME"]
+  C --&gt;|"accumulate&lt;br/&gt;over a period"| D["&lt;b&gt;period&lt;/b&gt;"]
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.4: From one decision to a reportable effect size.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The third rung comes in two versions, and choosing between them is the SAOM-specific part.</p>
+<p><strong>At the observed waves.</strong> At an observed network we do not know whose turn comes next, so every actor’s next potential ministep is evaluated and averaged. Fast, easy to report, easy to stratify. It answers: how large are these contrasts in the situations that could arise directly after an observed network?</p>
+<p><strong>Along model-implied ministeps.</strong> The sequence between waves is unobserved, so simulate it from the fitted model and average over the situations actually visited. It answers: how large are these contrasts in the situations the fitted model says typically occur between observations? In the software, <code>dynamic = TRUE</code>.</p>
+<p>They can differ — if a mechanism matters most in configurations that arise between waves rather than at them, the second is larger — so it can be worth reporting both and saying so when they agree.</p>
+<p>One dimension is independent of this ladder: the margin. Creation, maintenance, and joined tie-presence are available at every rung.</p>
+<p>The fourth rung, accumulating to a whole period, is a different kind of object and is taken up in Chapter 6.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Duxbury2023" class="csl-entry" role="listitem">
+Duxbury, Scott W. 2023. <span>“The Problem of Scaling in Exponential Random Graph Models.”</span> <em>Sociological Methods &amp; Research</em> 52 (2): 764–802.
+</div>
+<div id="ref-Duxbury2023a" class="csl-entry" role="listitem">
+———. 2026a. <span>“<span class="nocase">ergMargins</span>: Process Analysis for Exponential Random Graph Models.”</span> <a href="https://cran.r-project.org/package=ergMargins">https://cran.r-project.org/package=ergMargins</a>.
+</div>
+<div id="ref-Duxbury2026" class="csl-entry" role="listitem">
+———. 2026b. <span>“Marginal <span>Structural Effects</span> for <span>Exponential Random Graph Models</span>.”</span> <em>Sociological Methods &amp; Research</em>. <a href="https://doi.org/10.1177/00491241261467919">https://doi.org/10.1177/00491241261467919</a>.
+</div>
+<div id="ref-DuxburyWertsching2023" class="csl-entry" role="listitem">
+Duxbury, Scott W., and Jenna Wertsching. 2023. <span>“Scaling Bias in Pooled Exponential Random Graph Models.”</span> <em>Social Networks</em> 74: 19–30.
+</div>
+<div id="ref-Glasgow2022" class="csl-entry" role="listitem">
+Glasgow, Garrett. 2022. <em>Interpreting Discrete Choice Models</em>. Cambridge University Press.
+</div>
+<div id="ref-IndlekoferBrandes2013" class="csl-entry" role="listitem">
+Indlekofer, Natalie, and Ulrik Brandes. 2013. <span>“Relative Importance of Effects in Stochastic Actor-Oriented Models.”</span> <em>Network Science</em> 1: 278–304.
+</div>
+<div id="ref-LongMustillo2021" class="csl-entry" role="listitem">
+Long, J. Scott, and Sarah A. Mustillo. 2021. <span>“Using <span>Predictions</span> and <span>Marginal Effects</span> to <span>Compare Groups</span> in <span>Regression Models</span> for <span>Binary Outcomes</span>.”</span> <em>Sociological Methods &amp; Research</em> 50 (3): 1284–1320.
+</div>
+<div id="ref-SienaManual" class="csl-entry" role="listitem">
+Ripley, Ruth M., Tom A. B. Snijders, Zsófia Boda, and András Vörös. 2026. <span>“Manual for <span>RSiena</span>.”</span> University of Oxford, Department of Statistics; Nuffield College; University of Groningen, Department of Sociology. <a href="https://www.stats.ox.ac.uk/~snijders/siena/RSiena_Manual.pdf">https://www.stats.ox.ac.uk/~snijders/siena/RSiena_Manual.pdf</a>.
+</div>
+<div id="ref-Train2009" class="csl-entry" role="listitem">
+Train, Kenneth E. 2009. <em>Discrete <span>Choice Methods</span> with <span>Simulation</span></em>. 2nd ed. Cambridge: Cambridge University Press. <a href="https://doi.org/10.1017/CBO9780511805271">https://doi.org/10.1017/CBO9780511805271</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./01-interpretation.html" class="pagination-link" aria-label="What a coefficient tells you">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">What a coefficient tells you</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./03-worked-example.html" class="pagination-link" aria-label="Interpreting a SAOM">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Interpreting a SAOM</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
