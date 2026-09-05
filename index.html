@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -13,10 +13,16 @@
 
 <title>Interpreting Model Estimates</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -63,7 +69,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -92,15 +97,14 @@ div.csl-indent {
 <link href="./01-interpretation.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-27c261d06b905028a18691de25d09dde.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ed7344add5f1663e434276306a2aa159.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -238,7 +242,7 @@ div.csl-indent {
   <li><a href="#about-this-material" id="toc-about-this-material" class="nav-link active" data-scroll-target="#about-this-material">About this material</a>
   <ul class="collapse">
   <li><a href="#how-to-use-the-code-chapters" id="toc-how-to-use-the-code-chapters" class="nav-link" data-scroll-target="#how-to-use-the-code-chapters">How to use the code chapters</a></li>
-  <li><a href="#what-is-in-this-folder" id="toc-what-is-in-this-folder" class="nav-link" data-scroll-target="#what-is-in-this-folder">What is in this folder</a></li>
+  <li><a href="#what-is-in-the-repository" id="toc-what-is-in-the-repository" class="nav-link" data-scroll-target="#what-is-in-the-repository">What is in the repository</a></li>
   <li><a href="#the-workshop-programme" id="toc-the-workshop-programme" class="nav-link" data-scroll-target="#the-workshop-programme">The workshop programme</a></li>
   </ul></li>
   </ul>
@@ -290,7 +294,7 @@ div.csl-indent {
 <p>Chapter 6 says which parts are settled and which are current work — worth reading before relying on any of it in a paper.</p>
 <section id="how-to-use-the-code-chapters" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-use-the-code-chapters">How to use the code chapters</h2>
-<p>Chapters 3 to 5 are ordinary <code>.qmd</code> files and work on their own — open any of them in RStudio and run the chunks. Chapters 3 and 4 fit their models live and are meant to be used this way; Chapter 5 reads pre-computed results that ship in the bundle.</p>
+<p>Chapters 3 to 5 are ordinary <code>.qmd</code> files and work on their own — open any of them in RStudio and run the chunks. Chapters 3 and 4 fit their models live and are meant to be used this way; Chapter 5 reads pre-computed results that ship with the repository.</p>
 <p>The rendered HTML does <strong>not</strong> refit anything: chunk output is cached in <code>_freeze/</code>, which ships too, so the HTML builds in seconds and without RSiena installed. That cache only affects <code>quarto render</code> — running chunks yourself always executes.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"stocnet/rsiena@sienaMargins"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"metafor"</span>, <span class="st">"ggplot2"</span>, <span class="st">"sna"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -301,17 +305,17 @@ div.csl-indent {
 <li><strong>The specification syntax introduced in RSiena 1.6.</strong> Everything here is written in it. If you know the older syntax, chapter 3 of the manual <span class="citation" data-cites="SienaManual">(<a href="references.html#ref-SienaManual" role="doc-biblioref">Ripley et al. 2026</a>)</span> sets the old and new function names side by side, and <code>transformScript()</code> converts a script for you.</li>
 </ul>
 </section>
-<section id="what-is-in-this-folder" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-in-this-folder">What is in this folder</h2>
-<pre><code>01–02, 99   the reading chapters
-03-05      the three executable chapters
+<section id="what-is-in-the-repository" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-in-the-repository">What is in the repository</h2>
+<pre><code>01, 02, 99  the reading chapters (99 is the closing outlook)
+03–05       the three executable chapters
 data/       where the friendship data go — not included, see data/README.md
 scripts/    the meta-analysis pipeline, with its own README
 results/    fitted models and per-class marginal effects (.rds)
 output/     pooled tables and plots (.csv, .png)
 figs/       figures used by the reading chapters</code></pre>
 <p>The empirical data are not distributed with this material — they belong to the study they come from. Chapter 4 and <code>scripts/estimation.R</code> fetch them on first use; <code>data/README.md</code> says where they come from and on what terms. Chapter 3 needs nothing extra, since it uses the <code>s50</code> data that ships with RSiena.</p>
-<p>Run anything with the working directory set to this folder — paths are relative to it. Opening it as an RStudio project does that for you.</p>
+<p>Run anything with the working directory set to the repository root — paths are relative to it. Opening it as an RStudio project does that for you.</p>
 <p>Because every stage’s results are included, you can start at any point in the pipeline: re-pool from <code>results/postest_all_df.rds</code> in seconds, recompute marginal effects from <code>results/estimation_results.rds</code> in minutes, or re-estimate from the raw data if you have the time and have fetched them. <code>scripts/README.md</code> has the run order and the cost of each stage.</p>
 </section>
 <section id="the-workshop-programme" class="level2">
@@ -349,9 +353,9 @@ figs/       figures used by the reading chapters</code></pre>
 </table>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-SienaManual" class="csl-entry" role="listitem">
-Ripley, Ruth M., Tom A. B. Snijders, Zsófia Boda, and András Vörös. 2026. <span>“Manual for <span>RSiena</span>.”</span> University of Oxford, Department of Statistics; Nuffield College; University of Groningen, Department of Sociology. <a href="https://www.stats.ox.ac.uk/~snijders/siena/RSiena_Manual.pdf">https://www.stats.ox.ac.uk/~snijders/siena/RSiena_Manual.pdf</a>.
+Ripley, Ruth M., Tom A. B. Snijders, Zsófia Boda, and András Vörös. 2026. <em>Manual for <span>RSiena</span></em>. University of Oxford, Department of Statistics; Nuffield College; University of Groningen, Department of Sociology. <a href="https://www.stats.ox.ac.uk/~snijders/siena/RSiena_Manual.pdf">https://www.stats.ox.ac.uk/~snijders/siena/RSiena_Manual.pdf</a>.
 </div>
 </div>
 </section>
