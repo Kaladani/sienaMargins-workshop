@@ -24,7 +24,8 @@ before relying on any of it in a paper.
 
 Chapters 3 to 5 are ordinary `.qmd` files and work on their own — open any of them
 in RStudio and run the chunks. Chapters 3 and 4 fit their models live and are meant
-to be used this way; Chapter 5 reads pre-computed results that ship in the bundle.
+to be used this way; Chapter 5 reads pre-computed results that ship with the
+repository.
 
 The rendered HTML does **not** refit anything: chunk output is cached in `_freeze/`,
 which ships too, so the HTML builds in seconds and without RSiena installed. That
@@ -49,11 +50,11 @@ place before that install will work:
   [@SienaManual] sets the old and new function names side by side, and
   `transformScript()` converts a script for you.
 
-## What is in this folder
+## What is in the repository
 
 ```
-01–02, 99   the reading chapters
-03-05      the three executable chapters
+01, 02, 99  the reading chapters (99 is the closing outlook)
+03–05       the three executable chapters
 data/       where the friendship data go — not included, see data/README.md
 scripts/    the meta-analysis pipeline, with its own README
 results/    fitted models and per-class marginal effects (.rds)
@@ -66,8 +67,8 @@ study they come from. Chapter 4 and `scripts/estimation.R` fetch them on first
 use; `data/README.md` says where they come from and on what terms. Chapter 3
 needs nothing extra, since it uses the `s50` data that ships with RSiena.
 
-Run anything with the working directory set to this folder — paths are relative
-to it. Opening it as an RStudio project does that for you.
+Run anything with the working directory set to the repository root — paths are
+relative to it. Opening it as an RStudio project does that for you.
 
 Because every stage's results are included, you can start at any point in the
 pipeline: re-pool from `results/postest_all_df.rds` in seconds, recompute

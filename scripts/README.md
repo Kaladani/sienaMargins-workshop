@@ -1,6 +1,6 @@
 # The meta-analysis scripts
 
-Run everything with the working directory set to this bundle's root (the folder
+Run everything with the working directory set to the repository root (the folder
 holding `index.qmd`), not from inside `scripts/`. Paths are relative to that
 root: `data/`, `results/`, `output/`.
 
@@ -25,7 +25,7 @@ scale.
 
 ## Start wherever you like
 
-The results of each stage ship with the bundle, so you do not have to run the
+The results of each stage ship with the repository, so you do not have to run the
 expensive parts to see the later ones work.
 
 | start at | you need | cost | gets you |
