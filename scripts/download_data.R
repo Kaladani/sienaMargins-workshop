@@ -14,12 +14,9 @@
 ##############################################
 
 ## ---------------------------------------------------------------------------
-## PLACEHOLDER ADDRESS -- replace before circulating.
-##
-## Expected to be a directory containing the files named in AK_FILES below, so
-## that <AK_DATA_URL><filename> resolves.  Keep the trailing slash.
+## Hosted by Christian Steglich.
 ## ---------------------------------------------------------------------------
-AK_DATA_URL <- "https://example.org/workshops/AK/"
+AK_DATA_URL <- "https://steglich.gmw.rug.nl/workshops/"
 
 ## The three files the code actually reads.  The pupil questionnaire is at the
 ## same address but nothing here needs it, so it is not fetched by default.

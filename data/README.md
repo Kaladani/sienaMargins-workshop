@@ -13,9 +13,9 @@ Three files, which the code reads:
 | `AK_gender.RData` | `male[[class]]` |
 | `AK_primary.RData` | `primary[[class]]` |
 
-The pupil questionnaire (`QuestionnairePupilsWaveV-1.pdf`) is available from the
-same place. Nothing in the code reads it, but it documents the instrument the
-data come from.
+The pupil questionnaire is available from the same place:
+<https://steglich.gmw.rug.nl/workshops/QuestionnairePupilsWaveV-1.pdf>.
+Nothing in the code reads it, but it documents the instrument the data come from.
 
 ## Getting them
 
@@ -27,9 +27,6 @@ Put all three `.RData` files in this directory. Chapter 4 and
 `scripts/estimation.R` will also fetch them for you on first use — both call
 `ensure_ak_data()` from `scripts/download_data.R`, which downloads whatever is
 missing and leaves anything already present alone.
-
-> The address in `scripts/download_data.R` is currently a placeholder. Until it
-> is set, download the files by hand and put them here.
 
 Chapters 1, 3 and 5 do not need them: chapter 3 uses the `s50` data that ships
 with RSiena, and chapters 1 and 5 read the precomputed results in `results/`.
