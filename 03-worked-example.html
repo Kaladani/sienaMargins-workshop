@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -79,10 +79,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ed7344add5f1663e434276306a2aa159.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-fd0503e23dce65854c81c5baaade3bdf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -1136,7 +1136,7 @@ window.Quarto = {
 </div>
 <div class="callout-body-container callout-body">
 <p>The Step 1 descriptive difference is <strong>period-level</strong>: it compares two waves. The AME is <strong>per-opportunity</strong>: it refers to one ministep. They are not on the same footing, so the difference between them is not interpretable.</p>
-<p>Summing the contrast along the ministeps the model implies between one wave and the next does give a period-level quantity — the <strong>accumulated effect</strong> — but it is a cumulative count rather than a probability, so it does not simply close the gap either. Chapter 6 sets out what it does and does not support. For now, treat Step 1 as an anchor for intuition rather than as a number to subtract from.</p>
+<p>To put them side by side you need a model-implied quantity on the same footing as Step 1 — a probability that a tie is present at the <em>end</em> of a period, not a change at one decision. That quantity exists: hold the contrast for the whole period and difference the two endpoints. Because it is a difference of two probabilities it is bounded, and it can be set directly against the Step 1 number. Chapter 5 reports it across 17 classes and Chapter 6 says what it does and does not support. Until then, treat Step 1 as an anchor for intuition rather than as a number to subtract from.</p>
 </div>
 </div>
 <p>Everything above is evaluated at the <strong>observed</strong> waves. The model can instead average over its own <strong>model-implied decision sequences</strong> (<code>dynamic = TRUE</code>), which uses the whole simulated path between waves rather than only the observed states. Same functions, one extra argument.</p>

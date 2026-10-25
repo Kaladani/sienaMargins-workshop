@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Daniel Gotthardt (University of Hamburg)">
 <meta name="author" content="Christian Steglich (University of Groningen/Linköping University)">
 <meta name="author" content="Marijtje van Duijn (University of Groningen)">
-<meta name="dcterms.date" content="2026-09-07">
+<meta name="dcterms.date" content="2026-10-25">
 
 <title>Interpreting Model Estimates</title>
 <style>
@@ -101,10 +101,10 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ed7344add5f1663e434276306a2aa159.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-fd0503e23dce65854c81c5baaade3bdf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -273,7 +273,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 7, 2026</p>
+      <p class="date">October 25, 2026</p>
     </div>
   </div>
   
@@ -292,6 +292,23 @@ div.csl-indent {
 <p><strong>Chapters 1–2 are for reading.</strong> They set out why a SAOM coefficient is not an effect size, what a marginal effect is in general, and how the idea has to be adapted for a model whose decisions are unobserved. Few formulas, and the ones that appear are the ones you need to read the output later.</p>
 <p><strong>Chapters 3–5 are for running.</strong> They are executable documents, and they scale up: the worked example computes every quantity from Chapters 1–2 on the <code>s50</code> data that ships with RSiena; Chapter 4 does the same across three school classes and pools the results; Chapter 5 does it for seventeen classes under six specifications.</p>
 <p>Chapter 6 says which parts are settled and which are current work — worth reading before relying on any of it in a paper.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>If you saw an earlier version of this material
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The quantity reported for a whole period has changed. Earlier versions summed the per-decision effect along the model’s implied sequence of decisions, which gave a count rather than a probability. What is reported now is the <strong>period-level tie probability contrast</strong>: the chance the tie is present at the end of the period under one condition against the other. It is a difference between two probabilities, so it is bounded, and it can be set beside the observed difference in tie proportions between waves — which the earlier quantity could not.</p>
+<p>Nothing about the per-decision quantities has changed. The page date above shows when this version was built.</p>
+</div>
+</div>
+</div>
 <section id="how-to-use-the-code-chapters" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-use-the-code-chapters">How to use the code chapters</h2>
 <p>Chapters 3 to 5 are ordinary <code>.qmd</code> files and work on their own — open any of them in RStudio and run the chunks. Chapters 3 and 4 fit their models live and are meant to be used this way; Chapter 5 reads pre-computed results that ship with the repository.</p>

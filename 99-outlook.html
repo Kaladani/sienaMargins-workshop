@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -63,10 +63,10 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ed7344add5f1663e434276306a2aa159.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-fd0503e23dce65854c81c5baaade3bdf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -95,6 +95,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -203,7 +232,7 @@ div.csl-indent {
   <ul>
   <li><a href="#ready-to-use" id="toc-ready-to-use" class="nav-link active" data-scroll-target="#ready-to-use"><span class="header-section-number">6.1</span> Ready to use</a></li>
   <li><a href="#comparability" id="toc-comparability" class="nav-link" data-scroll-target="#comparability"><span class="header-section-number">6.2</span> Comparability</a></li>
-  <li><a href="#accumulating-to-a-whole-period" id="toc-accumulating-to-a-whole-period" class="nav-link" data-scroll-target="#accumulating-to-a-whole-period"><span class="header-section-number">6.3</span> Accumulating to a whole period</a></li>
+  <li><a href="#over-a-whole-period" id="toc-over-a-whole-period" class="nav-link" data-scroll-target="#over-a-whole-period"><span class="header-section-number">6.3</span> Over a whole period</a></li>
   <li><a href="#the-rate-parameter" id="toc-the-rate-parameter" class="nav-link" data-scroll-target="#the-rate-parameter"><span class="header-section-number">6.4</span> The rate parameter</a></li>
   <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">6.5</span> Further reading</a></li>
   </ul>
@@ -235,7 +264,7 @@ div.csl-indent {
 <p>A short guide to how much weight each quantity can carry.</p>
 <section id="ready-to-use" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="ready-to-use"><span class="header-section-number">6.1</span> Ready to use</h2>
-<p>The per-opportunity quantities are the ones to report: first differences on the tie-presence scale, second differences for interactions, each split by creation and maintenance margin, and averaged either at the observed waves or along model-implied ministeps.</p>
+<p>The per-opportunity quantities are the first ones to report: first differences on the tie-presence scale, second differences for interactions, each split by creation and maintenance margin, and averaged either at the observed waves or along model-implied ministeps. The period-level contrast described below is the second, and the two answer different questions rather than competing.</p>
 <p>They are well defined, they are implemented, and their interpretation is the one stated in Chapter 2: a probability change <em>per decision opportunity</em>, holding the decision situation fixed.</p>
 <p>Ego-level covariates are perturbed across the whole choice set rather than one alternative at a time, for the reason given in the aside in Chapter 2. That happens by itself, so the per-tie numbers you get for a sender effect are sound; they are just a narrow summary of it. The probability-mass contrast is the fuller one, and it is what to reach for before drawing conclusions about covariate sender effects.</p>
 </section>
@@ -279,16 +308,19 @@ div.csl-indent {
 <p><strong>On the specification.</strong> Pooling probability-scale quantities is more forgiving than pooling coefficients, since the numbers at least share units. But an effect missing from one network’s specification does not simply drop out: what a model leaves unexplained is folded into everything else, so the remaining coefficients contract and their AMEs move with them. Treating a non-estimable effect as a true zero is an assumption about that network rather than something the scale provides — reasonable where the effect really is negligible there, and worth stating rather than leaving implicit.</p>
 <p><strong>On the common scale.</strong> The probability scale gives a common unit and an interpretable quantity: the effective impact of a mechanism on decisions, in that network’s actual conditions. What it does not give is invariance. Where two networks genuinely differ in how predictable their actors’ decisions are, the same underlying preference translates into different probability shifts — and an effect size that comes out differently there is reporting something true. A difference in AMEs identifies a difference in effective impact, noise included by construction; it does not identify a difference in preferences.</p>
 </section>
-<section id="accumulating-to-a-whole-period" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="accumulating-to-a-whole-period"><span class="header-section-number">6.3</span> Accumulating to a whole period</h2>
-<p>Everything in Chapter 2 is per decision opportunity. A natural next question is what a mechanism contributes over a whole period between two waves, and the straightforward answer is to add the per-ministep effects along a simulated sequence.</p>
-<p>This has one clear advantage: it absorbs the rate parameter. Two networks whose actors decide at very different frequencies can have the same per-opportunity effect but very different period-level pressure, and only the accumulated version reflects that — which makes it the natural candidate when opportunity rates differ across the networks being compared.</p>
-<p>The scale needs care, though. An additive sum of probability changes is a count — extra ties created plus dissolutions avoided over the period — not a probability. It is not bounded, and it should not be set against a between-wave difference in tie proportions: a dyad that creates a tie and later drops it contributes twice to the count while changing prevalence not at all. So read ratios across specifications, which sit on a common scale, rather than levels on their own.</p>
-<p>Getting from that count to a genuinely bounded, prevalence-scale period quantity is current work. The construction follows the tie’s own two-state history rather than summing increments; it is derived but not implemented, so it is not available in the software yet.</p>
+<section id="over-a-whole-period" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="over-a-whole-period"><span class="header-section-number">6.3</span> Over a whole period</h2>
+<p>Everything in Chapter 2 is per decision opportunity. A natural next question is what a mechanism contributes over a whole period between two waves, and the quantity for that is the <strong>period-level tie probability contrast</strong>: hold the counterfactual for the whole period, follow the dyad’s own tie probability along the model-implied sequence, and difference the two endpoints.</p>
+<p>Two things make it the one to report at the period level.</p>
+<p>It absorbs the rate. Two networks whose actors decide at very different frequencies can have the same per-opportunity effect and very different period-level pressure, and only a period quantity reflects that — which is what makes comparison possible when opportunity rates differ across the networks being compared.</p>
+<p>And it stays a probability. The contrast is a difference between two probabilities that a tie is present at the end of the period, so it is bounded in <span class="math inline">\([-1, 1]\)</span> and lives on the same scale as the thing you can observe: the difference in tie proportions between one wave and the next. That is what lets the model-implied number be set beside the observed one, which is the comparison Chapter 3 wanted and could not have.</p>
+<p>It is implemented and it is what Chapters 3 and 5 report. One limitation is worth knowing. The recursion follows the focal tie’s own two states and holds the mirror tie fixed, so in a specification containing reciprocity the contrast understates slightly — by a few percent in the cases examined, and by nothing at all where reciprocity is absent.</p>
 </section>
 <section id="the-rate-parameter" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="the-rate-parameter"><span class="header-section-number">6.4</span> The rate parameter</h2>
-<p>Rate effects sit outside everything above, and that is a scope choice rather than an oversight: any count-level quantity mixes how <em>often</em> actors decide with what they choose given the chance, and separating the two needs its own treatment. The rate parameter is best read as governing how quickly a dyad’s situation can change, not where it ends up.</p>
+<p>Marginal effects for <em>rate effects themselves</em> sit outside everything above, and that is a scope choice rather than an oversight: the rate governs how often an actor is asked, which is a different kind of question from what the actor then does, and giving it a probability-scale contrast of its own needs its own treatment.</p>
+<p>What is not a scope choice, and is easy to miss, is that the rate is already inside one of the quantities above. A per-opportunity effect conditions on an opportunity having arisen, so it holds tempo fixed and reports the mechanism net of it. A period-level effect does not: how many chances a dyad gets is part of what determines where it ends up, so tempo and choice are combined in the number by construction. That is precisely why the period-level effect can be compared across networks whose actors decide at different frequencies — and precisely why it should not be read as a statement about preferences alone.</p>
+<p>Which you want therefore depends on whether the tempo of a setting is part of what you are comparing or something you would rather hold constant. Neither answer is more correct in general, and a comparison is clearer if it says which it has chosen. Where tempo differs a great deal between the networks being compared — and in the classes studied here it differs more than anything else — the choice does real work rather than none.</p>
 </section>
 <section id="further-reading" class="level2" data-number="6.5">
 <h2 data-number="6.5" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">6.5</span> Further reading</h2>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -63,10 +63,10 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ed7344add5f1663e434276306a2aa159.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-fd0503e23dce65854c81c5baaade3bdf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -482,7 +482,7 @@ Figure&nbsp;2.3: One interaction, negative as a coefficient and positive as a se
 <pre class="mermaid mermaid-js" data-label="fig-ladder">flowchart LR
   A["&lt;b&gt;dyad&lt;/b&gt;&lt;br/&gt;one alternative"] --&gt;|"average over&lt;br/&gt;alters"| B["&lt;b&gt;actor&lt;/b&gt;&lt;br/&gt;one decision situation"]
   B --&gt;|"average over&lt;br/&gt;decision situations"| C["&lt;b&gt;effect size&lt;/b&gt;&lt;br/&gt;AME"]
-  C --&gt;|"accumulate&lt;br/&gt;over a period"| D["&lt;b&gt;period&lt;/b&gt;"]
+  C --&gt;|"carry through&lt;br/&gt;a whole period"| D["&lt;b&gt;period&lt;/b&gt;"]
 </pre>
 </div>
 </div>
@@ -498,7 +498,7 @@ Figure&nbsp;2.4: From one decision to a reportable effect size.
 <p><strong>Along model-implied ministeps.</strong> The sequence between waves is unobserved, so simulate it from the fitted model and average over the situations actually visited. It answers: how large are these contrasts in the situations the fitted model says typically occur between observations? In the software, <code>dynamic = TRUE</code>.</p>
 <p>They can differ — if a mechanism matters most in configurations that arise between waves rather than at them, the second is larger — so it can be worth reporting both and saying so when they agree.</p>
 <p>One dimension is independent of this ladder: the margin. Creation, maintenance, and joined tie-presence are available at every rung.</p>
-<p>The fourth rung, accumulating to a whole period, is a different kind of object and is taken up in Chapter 6.</p>
+<p>The fourth rung, carrying the contrast through a whole period, is a different kind of object: it is no longer an average over decisions but a statement about where a dyad ends up. Chapter 6 takes it up.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">

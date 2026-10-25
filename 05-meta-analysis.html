@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -98,10 +98,10 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ed7344add5f1663e434276306a2aa159.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-fd0503e23dce65854c81c5baaade3bdf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -268,7 +268,7 @@ window.Quarto = {
   <li><a href="#what-was-done" id="toc-what-was-done" class="nav-link active" data-scroll-target="#what-was-done"><span class="header-section-number">5.1</span> What was done</a></li>
   <li><a href="#the-three-specifications" id="toc-the-three-specifications" class="nav-link" data-scroll-target="#the-three-specifications"><span class="header-section-number">5.2</span> The three specifications</a></li>
   <li><a href="#meta-analysis-of-average-marginal-effects" id="toc-meta-analysis-of-average-marginal-effects" class="nav-link" data-scroll-target="#meta-analysis-of-average-marginal-effects"><span class="header-section-number">5.3</span> Meta-analysis of average marginal effects</a></li>
-  <li><a href="#why-the-accumulated-effect-compares-better-across-rates" id="toc-why-the-accumulated-effect-compares-better-across-rates" class="nav-link" data-scroll-target="#why-the-accumulated-effect-compares-better-across-rates"><span class="header-section-number">5.4</span> Why the accumulated effect compares better across rates</a></li>
+  <li><a href="#why-the-period-level-effect-compares-better-across-rates" id="toc-why-the-period-level-effect-compares-better-across-rates" class="nav-link" data-scroll-target="#why-the-period-level-effect-compares-better-across-rates"><span class="header-section-number">5.4</span> Why the period-level effect compares better across rates</a></li>
   <li><a href="#does-the-choice-of-scale-change-the-picture" id="toc-does-the-choice-of-scale-change-the-picture" class="nav-link" data-scroll-target="#does-the-choice-of-scale-change-the-picture"><span class="header-section-number">5.5</span> Does the choice of scale change the picture?</a></li>
   <li><a href="#the-result-a-trade-off-that-only-appears-when-keeping-ties" id="toc-the-result-a-trade-off-that-only-appears-when-keeping-ties" class="nav-link" data-scroll-target="#the-result-a-trade-off-that-only-appears-when-keeping-ties"><span class="header-section-number">5.6</span> The result: a trade-off that only appears when keeping ties</a></li>
   <li><a href="#in-short" id="toc-in-short" class="nav-link" data-scroll-target="#in-short"><span class="header-section-number">5.7</span> In short</a></li>
@@ -367,11 +367,12 @@ window.Quarto = {
 <section id="meta-analysis-of-average-marginal-effects" class="level2" data-number="5.3">
 <h2 data-number="5.3" class="anchored" data-anchor-id="meta-analysis-of-average-marginal-effects"><span class="header-section-number">5.3</span> Meta-analysis of average marginal effects</h2>
 <p>The walkthrough on single networks ends with <strong>average marginal effects</strong>: first differences in the probability of a tie, averaged over decision situations. Those are per-opportunity quantities — they describe one ministep.</p>
-<p>Here is the AME for reciprocity across the 17 classes, next to the coefficient it came from and to the accumulated effect introduced below:</p>
+<p>This chapter also uses the fourth rung of Chapter 2’s ladder, so it is worth saying plainly what it is. A <strong>period-level effect</strong> asks a different question from an AME. Instead of averaging a contrast over single decisions, it holds the contrast in place for the whole period — reciprocated throughout, say, against unreciprocated throughout — follows the dyad’s probability of being tied along the sequence of decisions the model implies, and takes the difference between the two probabilities that remain at the end. It is still a difference between two probabilities, so it is bounded and reads like one; what changes is that it refers to a period rather than to a decision. Chapter 6 says what it does and does not support.</p>
+<p>Here is the AME for reciprocity across the 17 classes, next to the coefficient it came from and that period-level effect:</p>
 <ul>
 <li>the <strong>estimated coefficient</strong>, as reported by <code>siena07</code>;</li>
-<li>the <strong>average marginal effect (AME)</strong>, the first difference in the probability of a tie averaged over decision situations — one ministep;</li>
-<li>the <strong>accumulated effect</strong>, the same contrast summed along the model-implied ministep sequence, so it refers to a whole period.</li>
+<li>the <strong>average marginal effect (AME)</strong>, the first difference in the probability of a tie averaged over decision situations — one ministep. Chapter 2 gave two versions of this average, and the one used throughout this chapter is the first: evaluated <strong>at the observed waves</strong>, not along simulated sequences;</li>
+<li>the <strong>period-level effect</strong>, the same contrast held for a whole period and read off at its end, so it refers to a period rather than to one decision.</li>
 </ul>
 <div class="cell">
 <details class="code-fold">
@@ -385,8 +386,8 @@ window.Quarto = {
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"coefficient"</span>),</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">one</span>(<span class="st">"table_static_meta.csv"</span>, <span class="st">"recip_fd"</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"AME"</span>),</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">one</span>(<span class="st">"table_accumulated_meta.csv"</span>, <span class="st">"recip_fd"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"accumulated"</span>)))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">one</span>(<span class="st">"table_endpoint_meta.csv"</span>, <span class="st">"recip_fd"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"per period"</span>)))</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>sc <span class="ot">&lt;-</span> sc[sc<span class="sc">$</span>model <span class="sc">%in%</span> KEEP, ]</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>sc[, <span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">round</span>(sc[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">3</span>)</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(sc) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
@@ -400,7 +401,7 @@ window.Quarto = {
 <th style="text-align: left;">model</th>
 <th style="text-align: right;">coefficient</th>
 <th style="text-align: right;">AME</th>
-<th style="text-align: right;">accumulated</th>
+<th style="text-align: right;">per period</th>
 </tr>
 </thead>
 <tbody>
@@ -408,19 +409,19 @@ window.Quarto = {
 <td style="text-align: left;">model_0</td>
 <td style="text-align: right;">2.149</td>
 <td style="text-align: right;">0.073</td>
-<td style="text-align: right;">0.386</td>
+<td style="text-align: right;">0.240</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">model_2</td>
 <td style="text-align: right;">2.049</td>
 <td style="text-align: right;">0.057</td>
-<td style="text-align: right;">0.302</td>
+<td style="text-align: right;">0.184</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">model_3</td>
 <td style="text-align: right;">1.151</td>
 <td style="text-align: right;">0.042</td>
-<td style="text-align: right;">0.223</td>
+<td style="text-align: right;">0.136</td>
 </tr>
 </tbody>
 </table>
@@ -428,11 +429,11 @@ window.Quarto = {
 </div>
 </div>
 <p>The three agree here on which specification gives the strongest reciprocity effect. That is an observation about these data rather than something to count on: the scaling arguments in Chapter 1 say a coefficient and its probability-scale counterparts need not move together, and none of the three is adjusted for whatever its own specification leaves out.</p>
-<p>What they are differs. The coefficient is a difference in log-odds within a choice set. The AME is a probability change per decision opportunity, averaged over ministeps that are not themselves observed. The accumulated effect refers to a whole period, but on a cumulative count scale rather than a probability one — Chapter 6 sets out what that scale does and does not support.</p>
+<p>What they are differs. The coefficient is a difference in log-odds within a choice set. The AME is a probability change per decision opportunity, averaged over the potential next ministeps at each <strong>observed</strong> wave — the first of the two averages Chapter 2 sets out. Averaging instead along the model’s own simulated sequences (<code>dynamic = TRUE</code>) is the second, and it is computed for every class and model here too. The two track each other closely in these data — they order the classes almost identically, and the typical difference between them is a few percent — so nothing below would change if the other were used. The period-level effect is also a probability difference, but it refers to a whole period rather than to one decision: the chance the tie is there at the end of the period under one condition, against the chance under the other.</p>
 <p>What the probability scale does not fix on its own is the size of the choice set. These classes run from 22 to 33 pupils, so the number of alternatives an actor faces varies by about half across the pool, and the classes differ in composition besides. Chapter 2’s point applies here: these probabilities live under a <span class="math inline">\(1/K\)</span> geometry, so a per-opportunity probability of a given size does not mean quite the same thing in a class of 22 as in one of 33. Moving off the coefficient scale buys a common unit, not automatically a common baseline.</p>
 </section>
-<section id="why-the-accumulated-effect-compares-better-across-rates" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="why-the-accumulated-effect-compares-better-across-rates"><span class="header-section-number">5.4</span> Why the accumulated effect compares better across rates</h2>
+<section id="why-the-period-level-effect-compares-better-across-rates" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="why-the-period-level-effect-compares-better-across-rates"><span class="header-section-number">5.4</span> Why the period-level effect compares better across rates</h2>
 <p>The AME answers “how much per decision”. It does not say how much happens over a period, because it does not know how often actors decide — and they do not all decide equally often. The rate parameter varies a lot between these classes:</p>
 <div class="cell">
 <details class="code-fold">
@@ -444,10 +445,10 @@ window.Quarto = {
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>rt <span class="ot">&lt;-</span> <span class="fu">pick</span>(raw, effect <span class="sc">==</span> <span class="st">"friendship_rate1"</span> <span class="sc">&amp;</span> model <span class="sc">==</span> <span class="st">"model_2"</span>)</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>so <span class="ot">&lt;-</span> <span class="fu">pick</span>(p, estimand <span class="sc">==</span> <span class="st">"static"</span> <span class="sc">&amp;</span> condition <span class="sc">==</span> <span class="st">"pooled"</span> <span class="sc">&amp;</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>              model <span class="sc">==</span> <span class="st">"model_2"</span> <span class="sc">&amp;</span> effect <span class="sc">==</span> <span class="st">"recip_fd"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>pp <span class="ot">&lt;-</span> <span class="fu">pick</span>(p, estimand <span class="sc">==</span> <span class="st">"accumulated"</span> <span class="sc">&amp;</span> condition <span class="sc">==</span> <span class="st">"pooled"</span> <span class="sc">&amp;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>pp <span class="ot">&lt;-</span> <span class="fu">pick</span>(p, estimand <span class="sc">==</span> <span class="st">"endpoint"</span> <span class="sc">&amp;</span> condition <span class="sc">==</span> <span class="st">"pooled"</span> <span class="sc">&amp;</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>              model <span class="sc">==</span> <span class="st">"model_2"</span> <span class="sc">&amp;</span> effect <span class="sc">==</span> <span class="st">"recip_fd"</span>)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(rt)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"opportunities"</span>; <span class="fu">names</span>(so)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"AME"</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pp)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"accumulated"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pp)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"per_period"</span></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>cl <span class="ot">&lt;-</span> <span class="fu">merge</span>(<span class="fu">merge</span>(rt, so), pp)</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">range</span>(cl<span class="sc">$</span>opportunities), <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -461,7 +462,7 @@ window.Quarto = {
 <details class="code-fold">
 <summary>show the code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cl <span class="ot">&lt;-</span> cl[<span class="fu">order</span>(cl<span class="sc">$</span>AME), ]</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cl[cl<span class="sc">$</span>class_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"12c"</span>, <span class="st">"02f"</span>), ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cl[cl<span class="sc">$</span>class_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"12c"</span>, <span class="st">"12f"</span>), ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="kable-table">
@@ -472,45 +473,45 @@ window.Quarto = {
 <th style="text-align: left;">class_id</th>
 <th style="text-align: right;">opportunities</th>
 <th style="text-align: right;">AME</th>
-<th style="text-align: right;">accumulated</th>
+<th style="text-align: right;">per_period</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">02f</td>
-<td style="text-align: right;">9.293399</td>
-<td style="text-align: right;">0.0490521</td>
-<td style="text-align: right;">0.4093793</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">12f</td>
+<td style="text-align: right;">11.350663</td>
+<td style="text-align: right;">0.0650279</td>
+<td style="text-align: right;">0.3159630</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">9</td>
 <td style="text-align: left;">12c</td>
 <td style="text-align: right;">3.425524</td>
 <td style="text-align: right;">0.1715527</td>
-<td style="text-align: right;">0.3610473</td>
+<td style="text-align: right;">0.2074542</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
-<p>Class <code>12c</code> has roughly three times the reciprocity effect <em>per decision</em> of class <code>02f</code>, yet <strong>less</strong> total movement over the period — because its actors get about a third as many opportunities. On the per-opportunity scale <code>12c</code> looks like the stronger case; on the period scale it is the weaker one.</p>
+<p>Class <code>12c</code> has well over twice the reciprocity effect <em>per decision</em> of class <code>12f</code>, and yet reciprocity does <strong>more</strong> there over a period — because <code>12f</code>’s actors get around three times as many opportunities to act on it. On the per-opportunity scale <code>12c</code> is the stronger case; on the period scale it is the weaker one.</p>
 <p>Across all 17 classes the two scales rank the classes differently:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">rank_correlation =</span> <span class="fu">round</span>(<span class="fu">cor</span>(cl<span class="sc">$</span>AME, cl<span class="sc">$</span>accumulated,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">rank_correlation =</span> <span class="fu">round</span>(<span class="fu">cor</span>(cl<span class="sc">$</span>AME, cl<span class="sc">$</span>per_period,</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">method =</span> <span class="st">"spearman"</span>), <span class="dv">2</span>),</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">classes_that_change_rank =</span> <span class="fu">sum</span>(<span class="fu">rank</span>(cl<span class="sc">$</span>AME) <span class="sc">!=</span> <span class="fu">rank</span>(cl<span class="sc">$</span>accumulated)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">classes_that_change_rank =</span> <span class="fu">sum</span>(<span class="fu">rank</span>(cl<span class="sc">$</span>AME) <span class="sc">!=</span> <span class="fu">rank</span>(cl<span class="sc">$</span>per_period)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        rank_correlation classes_that_change_rank 
-                    0.64                    13.00 </code></pre>
+                     0.8                     11.0 </code></pre>
 </div>
 </div>
-<p>This is the specific sense in which the accumulated effect compares better: it carries the rate, so it says what a mechanism does in a setting rather than what it does per opportunity. Two networks running at different tempos can have identical AMEs and quite different consequences over a period.</p>
-<p>The price is interpretability. The accumulated effect is a sum, so it grows with the number of opportunities and is not bounded the way a proportion is — a count of extra ties created and dissolutions avoided rather than a probability. That makes ratios between specifications readable and levels on their own much less so, and it means the number should not be set against a between-wave difference in tie proportions. Chapter 6 takes up those limits; the point here is only that when opportunity rates differ, this is the scale on which the comparison can be made at all.</p>
+<p>This is the specific sense in which the period-level effect compares better: it carries the rate, so it says what a mechanism does in a setting rather than what it does per opportunity. Two networks running at different tempos can have identical AMEs and quite different consequences over a period.</p>
+<p>That the two scales disagree is not a defect of either. They answer different questions, and which you want depends on whether the tempo of a setting is part of what you are comparing or something you would rather hold constant. Ask how reciprocity <em>works</em> in two classrooms and the per-opportunity effect is the honest comparison; ask what reciprocity <em>does</em> in them over a term and it is the period-level one.</p>
 </section>
 <section id="does-the-choice-of-scale-change-the-picture" class="level2" data-number="5.5">
 <h2 data-number="5.5" class="anchored" data-anchor-id="does-the-choice-of-scale-change-the-picture"><span class="header-section-number">5.5</span> Does the choice of scale change the picture?</h2>
@@ -535,23 +536,23 @@ window.Quarto = {
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">g</span>(raw, effect <span class="sc">==</span> eff_map<span class="sc">$</span>coefn[i] <span class="sc">&amp;</span> model <span class="sc">==</span> <span class="st">"model_2"</span>)</span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">g</span>(p, estimand <span class="sc">==</span> <span class="st">"static"</span> <span class="sc">&amp;</span> condition <span class="sc">==</span> <span class="st">"pooled"</span> <span class="sc">&amp;</span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            effect <span class="sc">==</span> eff_map<span class="sc">$</span>key[i] <span class="sc">&amp;</span> model <span class="sc">==</span> <span class="st">"model_2"</span>)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">g</span>(p, estimand <span class="sc">==</span> <span class="st">"accumulated"</span> <span class="sc">&amp;</span> condition <span class="sc">==</span> <span class="st">"pooled"</span> <span class="sc">&amp;</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">g</span>(p, estimand <span class="sc">==</span> <span class="st">"endpoint"</span> <span class="sc">&amp;</span> condition <span class="sc">==</span> <span class="st">"pooled"</span> <span class="sc">&amp;</span></span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>            effect <span class="sc">==</span> eff_map<span class="sc">$</span>key[i] <span class="sc">&amp;</span> model <span class="sc">==</span> <span class="st">"model_2"</span>)</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(r)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"coef"</span>; <span class="fu">names</span>(s)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"ame"</span>; <span class="fu">names</span>(a)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"acc"</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(r)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"coef"</span>; <span class="fu">names</span>(s)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"ame"</span>; <span class="fu">names</span>(a)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"per_period"</span></span>
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">merge</span>(<span class="fu">merge</span>(r, s), a)</span>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>(</span>
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">effect =</span> eff_map<span class="sc">$</span>label[i], <span class="at">step =</span> <span class="st">"coefficient → AME"</span>,</span>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>               <span class="at">x =</span> <span class="fu">rank</span>(m<span class="sc">$</span>coef), <span class="at">y =</span> <span class="fu">rank</span>(m<span class="sc">$</span>ame)),</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">effect =</span> eff_map<span class="sc">$</span>label[i], <span class="at">step =</span> <span class="st">"AME → accumulated"</span>,</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>               <span class="at">x =</span> <span class="fu">rank</span>(m<span class="sc">$</span>ame),  <span class="at">y =</span> <span class="fu">rank</span>(m<span class="sc">$</span>acc)))</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">effect =</span> eff_map<span class="sc">$</span>label[i], <span class="at">step =</span> <span class="st">"AME → per period"</span>,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>               <span class="at">x =</span> <span class="fu">rank</span>(m<span class="sc">$</span>ame),  <span class="at">y =</span> <span class="fu">rank</span>(m<span class="sc">$</span>per_period)))</span>
 <span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>}))</span>
 <span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="do">## Explicit level order for both facet dimensions.  Without this, facet_grid</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="do">## sorts alphabetically and puts "AME -&gt; accumulated" above "coefficient -&gt;</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="do">## sorts alphabetically and puts "AME -&gt; per period" above "coefficient -&gt;</span></span>
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="do">## AME", which is the reverse of the order the text reads them in.</span></span>
 <span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>ranks<span class="sc">$</span>step   <span class="ot">&lt;-</span> <span class="fu">factor</span>(ranks<span class="sc">$</span>step,</span>
 <span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>                       <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"coefficient → AME"</span>,</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">"AME → accumulated"</span>))</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">"AME → per period"</span>))</span>
 <span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>ranks<span class="sc">$</span>effect <span class="ot">&lt;-</span> <span class="fu">factor</span>(ranks<span class="sc">$</span>effect, <span class="at">levels =</span> eff_map<span class="sc">$</span>label)</span>
 <span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ranks, <span class="fu">aes</span>(x, y)) <span class="sc">+</span></span>
@@ -614,19 +615,19 @@ window.Quarto = {
 <td style="text-align: right;">0.50</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">AME → accumulated</td>
+<td style="text-align: left;">AME → per period</td>
 <td style="text-align: left;">reciprocity</td>
-<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">0.80</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">AME → accumulated</td>
+<td style="text-align: left;">AME → per period</td>
 <td style="text-align: left;">primary school</td>
-<td style="text-align: right;">0.89</td>
+<td style="text-align: right;">0.93</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">AME → accumulated</td>
+<td style="text-align: left;">AME → per period</td>
 <td style="text-align: left;">transitivity</td>
-<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">0.50</td>
 </tr>
 </tbody>
 </table>
@@ -634,7 +635,7 @@ window.Quarto = {
 </div>
 </div>
 <p><strong>Top row — coefficient to AME.</strong> Rescaling a coefficient into a probability leaves the classes in almost the same order for reciprocity and for the primary-school effect: whatever the coefficient told you about which class has the strongest effect, the probability tells you too. Transitivity is the exception.</p>
-<p><strong>Bottom row — AME to accumulated.</strong> This is the step just made, and here the classes do reorder, because the question changes from what a mechanism does per decision to what it does over a period.</p>
+<p><strong>Bottom row — AME to per period.</strong> This is the step just made, and here the classes do reorder, because the question changes from what a mechanism does per decision to what it does over a period.</p>
 <section id="which-ame" class="level3" data-number="5.5.1">
 <h3 data-number="5.5.1" class="anchored" data-anchor-id="which-ame"><span class="header-section-number">5.5.1</span> Which AME?</h3>
 <p>Both scales above pool tie creation and tie maintenance into one number. Chapters 2 to 4 kept them apart, so it is worth asking what the pooling costs here. The same rank correlation, computed against the creation-only and maintenance-only averages:</p>
@@ -702,20 +703,20 @@ window.Quarto = {
 </section>
 <section id="the-result-a-trade-off-that-only-appears-when-keeping-ties" class="level2" data-number="5.6">
 <h2 data-number="5.6" class="anchored" data-anchor-id="the-result-a-trade-off-that-only-appears-when-keeping-ties"><span class="header-section-number">5.6</span> The result: a trade-off that only appears when keeping ties</h2>
-<p>With the scale settled, a substantive question. Do reciprocity and transitivity reinforce each other, or substitute for one another? That is a <strong>second difference</strong> — how much the effect of one more two-path changes when a tie goes from unreciprocated to reciprocated — and everything below is on the accumulated scale.</p>
-<p>Start with it as it would normally be reported: one estimate per specification, averaged over every ministep of the period.</p>
+<p>With the scale settled, a substantive question. Do reciprocity and transitivity reinforce each other, or substitute for one another? That is a <strong>second difference</strong> — how much the effect of one more two-path changes when a tie goes from unreciprocated to reciprocated — and everything below is on the period scale.</p>
+<p>Start with it as it would normally be reported: one estimate per specification, for the period as a whole.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>pool <span class="ot">&lt;-</span> <span class="fu">get</span>(<span class="st">"table_accumulated_meta.csv"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>pool <span class="ot">&lt;-</span> <span class="fu">get</span>(<span class="st">"table_endpoint_meta.csv"</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>pool <span class="ot">&lt;-</span> pool[pool<span class="sc">$</span>effect <span class="sc">==</span> <span class="st">"interaction_sd"</span> <span class="sc">&amp;</span> pool<span class="sc">$</span>model <span class="sc">%in%</span> KEEP,</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">"model"</span>, <span class="st">"est"</span>, <span class="st">"ci_low"</span>, <span class="st">"ci_high"</span>)]</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pool, <span class="fu">aes</span>(est, model, <span class="at">xmin =</span> ci_low, <span class="at">xmax =</span> ci_high)) <span class="sc">+</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="at">colour =</span> <span class="st">"grey25"</span>) <span class="sc">+</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"accumulated interaction over a period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Pooled over all ministeps"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"interaction over a period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Pooled over the whole period"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -731,7 +732,7 @@ window.Quarto = {
 <details class="code-fold">
 <summary>show the code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ctx <span class="ot">&lt;-</span> <span class="fu">get</span>(<span class="st">"table_context_meta.csv"</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ctx <span class="ot">&lt;-</span> ctx[ctx<span class="sc">$</span>effect <span class="sc">==</span> <span class="st">"interaction_sd"</span> <span class="sc">&amp;</span> ctx<span class="sc">$</span>estimand <span class="sc">==</span> <span class="st">"accumulated"</span> <span class="sc">&amp;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ctx <span class="ot">&lt;-</span> ctx[ctx<span class="sc">$</span>effect <span class="sc">==</span> <span class="st">"interaction_sd"</span> <span class="sc">&amp;</span> ctx<span class="sc">$</span>estimand <span class="sc">==</span> <span class="st">"endpoint"</span> <span class="sc">&amp;</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>           ctx<span class="sc">$</span>model <span class="sc">%in%</span> KEEP,</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">c</span>(<span class="st">"model"</span>, <span class="st">"context"</span>, <span class="st">"est"</span>, <span class="st">"ci_low"</span>, <span class="st">"ci_high"</span>)]</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
@@ -746,7 +747,7 @@ window.Quarto = {
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">pooled =</span> <span class="st">"grey25"</span>,</span>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">creation =</span> <span class="st">"#2166ac"</span>,</span>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">maintenance =</span> <span class="st">"#d73027"</span>)) <span class="sc">+</span></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"accumulated interaction over a period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">colour =</span> <span class="cn">NULL</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"interaction over a period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">colour =</span> <span class="cn">NULL</span>,</span>
 <span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Split by the kind of decision"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
@@ -781,30 +782,30 @@ window.Quarto = {
 <tr class="odd">
 <td style="text-align: left;">model_0</td>
 <td style="text-align: left;">creation</td>
-<td style="text-align: right;">-0.016</td>
-<td style="text-align: right;">-0.090</td>
-<td style="text-align: right;">0.057</td>
+<td style="text-align: right;">-0.012</td>
+<td style="text-align: right;">-0.054</td>
+<td style="text-align: right;">0.031</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">model_0</td>
 <td style="text-align: left;">maintenance</td>
-<td style="text-align: right;">-0.495</td>
-<td style="text-align: right;">-0.596</td>
-<td style="text-align: right;">-0.394</td>
+<td style="text-align: right;">-0.140</td>
+<td style="text-align: right;">-0.177</td>
+<td style="text-align: right;">-0.102</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">model_2</td>
 <td style="text-align: left;">creation</td>
-<td style="text-align: right;">-0.025</td>
-<td style="text-align: right;">-0.096</td>
-<td style="text-align: right;">0.047</td>
+<td style="text-align: right;">-0.013</td>
+<td style="text-align: right;">-0.051</td>
+<td style="text-align: right;">0.024</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">model_2</td>
 <td style="text-align: left;">maintenance</td>
-<td style="text-align: right;">-0.458</td>
-<td style="text-align: right;">-0.575</td>
-<td style="text-align: right;">-0.342</td>
+<td style="text-align: right;">-0.146</td>
+<td style="text-align: right;">-0.189</td>
+<td style="text-align: right;">-0.103</td>
 </tr>
 </tbody>
 </table>
@@ -817,7 +818,7 @@ window.Quarto = {
 <details class="code-fold">
 <summary>show the code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>per <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">file.path</span>(RES, <span class="st">"postest_all_df.rds"</span>))</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>per <span class="ot">&lt;-</span> per[per<span class="sc">$</span>estimand <span class="sc">==</span> <span class="st">"accumulated"</span> <span class="sc">&amp;</span> per<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"bydensity"</span> <span class="sc">&amp;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>per <span class="ot">&lt;-</span> per[per<span class="sc">$</span>estimand <span class="sc">==</span> <span class="st">"endpoint"</span> <span class="sc">&amp;</span> per<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"bydensity"</span> <span class="sc">&amp;</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>           per<span class="sc">$</span>effect <span class="sc">==</span> <span class="st">"interaction_sd"</span> <span class="sc">&amp;</span> per<span class="sc">$</span>model <span class="sc">%in%</span> KEEP <span class="sc">&amp;</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>           per<span class="sc">$</span>stratum <span class="sc">!=</span> <span class="dv">0</span>, ]</span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>per<span class="sc">$</span>context  <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(per<span class="sc">$</span>stratum <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">"creation"</span>, <span class="st">"maintenance"</span>)</span>
@@ -842,10 +843,11 @@ window.Quarto = {
 <span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">creation =</span> <span class="st">"#2166ac"</span>,</span>
 <span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">maintenance =</span> <span class="st">"#d73027"</span>)) <span class="sc">+</span></span>
 <span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">`</span><span class="at">FALSE</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">16</span>, <span class="st">`</span><span class="at">TRUE</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">18</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>  <span class="do">## a few single-class intervals run past +/- 3; clipped so the rest is legible</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"accumulated second difference over a period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">colour =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>  <span class="do">## a handful of single-class intervals run far wider than the rest; clipped so</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>  <span class="do">## the bulk stays legible</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.8</span>, <span class="fl">0.4</span>)) <span class="sc">+</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"second difference over a period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">colour =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -863,8 +865,8 @@ window.Quarto = {
 <section id="in-short" class="level2" data-number="5.7">
 <h2 data-number="5.7" class="anchored" data-anchor-id="in-short"><span class="header-section-number">5.7</span> In short</h2>
 <ul>
-<li>The coefficient, the AME and the accumulated effect agree here on direction and respond similarly to the specification — an observation about these data rather than something to rely on in general.</li>
-<li>Only the accumulated effect carries the rate, which is what lets it be compared between settings whose actors decide at different frequencies. It is a cumulative count rather than a probability, so it is read through ratios rather than as a between-wave difference.</li>
+<li>The coefficient, the AME and the period-level effect agree here on direction and respond similarly to the specification — an observation about these data rather than something to rely on in general.</li>
+<li>Only the period-level effect carries the rate, which is what lets it be compared between settings whose actors decide at different frequencies. It remains a difference between two probabilities, so it can also be read against the observed between-wave difference in tie proportions — which the per-opportunity effect cannot.</li>
 <li>Splitting by kind of decision changes the substantive conclusion rather than refining it: the reciprocity × transitivity second difference is absent in tie creation and large in tie maintenance.</li>
 </ul>
 
