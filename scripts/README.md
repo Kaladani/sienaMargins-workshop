@@ -17,7 +17,7 @@ places marked for your own groups, specification and target. It is a `.qmd`, so 
 can open it in RStudio and run the chunks one at a time.
 
 The four scripts here are the same thing at full size: 17 classes, six
-specifications, three ways of averaging, plus the descriptive counterparts. They
+specifications, several ways of averaging, plus the descriptive counterparts. They
 are worth **reading** once the small version makes sense — they show what the extra
 bookkeeping is for — but they are not the easiest place to start editing. Chapters 2
 and 3 cover what the quantities mean; this folder is about how they were computed at
@@ -70,8 +70,25 @@ specifications themselves if you want to re-estimate.
    ```
 
    Useful because the estimands differ enormously in cost: the observed-wave
-   (`static`) quantities take seconds, while the simulated (`dynamic`) and
-   `accumulated` ones take minutes per model.
+   (`static`) quantities take seconds, while everything computed on simulated
+   chains — `dynamic` and the period-level `endpoint` — takes minutes per class
+   per model.
+
+   Three estimands run by default: `static` and `dynamic` are per-opportunity,
+   and `endpoint` is the period-level tie probability contrast that the
+   chapters report.
+
+   Because a part file is keyed by (estimand, conditioning, model), the blocks
+   can be run in parallel as well as a few at a time — one process per
+   (model, conditioning), each in its own working directory. Collect the part
+   files into `results/postest_parts/` afterwards; the combined frame is just
+   their `rbind`, so you can rebuild it without recomputing anything:
+
+   ```r
+   parts <- lapply(list.files("results/postest_parts", "[.]rds$",
+                              full.names = TRUE), readRDS)
+   saveRDS(do.call(rbind, parts), "results/postest_all_df.rds")
+   ```
 
 4. **`meta_analysis.R`** — pools the per-class results with `metafor`, and writes
    the tables and plots that Chapter 5 reads, into `output/`.

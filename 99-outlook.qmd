@@ -7,10 +7,11 @@ A short guide to how much weight each quantity can carry.
 
 ## Ready to use
 
-The per-opportunity quantities are the ones to report: first differences on the
-tie-presence scale, second differences for interactions, each split by creation and
-maintenance margin, and averaged either at the observed waves or along
-model-implied ministeps.
+The per-opportunity quantities are the first ones to report: first differences on
+the tie-presence scale, second differences for interactions, each split by creation
+and maintenance margin, and averaged either at the observed waves or along
+model-implied ministeps. The period-level contrast described below is the second,
+and the two answer different questions rather than competing.
 
 They are well defined, they are implemented, and their interpretation is the one
 stated in Chapter 2: a probability change *per decision opportunity*, holding the
@@ -54,38 +55,57 @@ size that comes out differently there is reporting something true. A difference 
 AMEs identifies a difference in effective impact, noise included by construction;
 it does not identify a difference in preferences.
 
-## Accumulating to a whole period
+## Over a whole period
 
 Everything in Chapter 2 is per decision opportunity. A natural next question is what
-a mechanism contributes over a whole period between two waves, and the
-straightforward answer is to add the per-ministep effects along a simulated
-sequence.
+a mechanism contributes over a whole period between two waves, and the quantity for
+that is the **period-level tie probability contrast**: hold the counterfactual for
+the whole period, follow the dyad's own tie probability along the model-implied
+sequence, and difference the two endpoints.
 
-This has one clear advantage: it absorbs the rate parameter. Two networks whose
-actors decide at very different frequencies can have the same per-opportunity effect
-but very different period-level pressure, and only the accumulated version reflects
-that — which makes it the natural candidate when opportunity rates differ across the
-networks being compared.
+Two things make it the one to report at the period level.
 
-The scale needs care, though. An additive sum of probability changes is a count —
-extra ties created plus dissolutions avoided over the period — not a probability. It
-is not bounded, and it should not be set against a between-wave difference in tie
-proportions: a dyad that creates a tie and later drops it contributes twice to the
-count while changing prevalence not at all. So read ratios across specifications,
-which sit on a common scale, rather than levels on their own.
+It absorbs the rate. Two networks whose actors decide at very different frequencies
+can have the same per-opportunity effect and very different period-level pressure,
+and only a period quantity reflects that — which is what makes comparison possible
+when opportunity rates differ across the networks being compared.
 
-Getting from that count to a genuinely bounded, prevalence-scale period quantity is
-current work. The construction follows the tie's own two-state history rather than
-summing increments; it is derived but not implemented, so it is not available in the
-software yet.
+And it stays a probability. The contrast is a difference between two probabilities
+that a tie is present at the end of the period, so it is bounded in $[-1, 1]$ and
+lives on the same scale as the thing you can observe: the difference in tie
+proportions between one wave and the next. That is what lets the model-implied
+number be set beside the observed one, which is the comparison Chapter 3 wanted and
+could not have.
+
+It is implemented and it is what Chapters 3 and 5 report. One limitation is worth
+knowing. The recursion follows the focal tie's own two states and holds the mirror
+tie fixed, so in a specification containing reciprocity the contrast understates
+slightly — by a few percent in the cases examined, and by nothing at all where
+reciprocity is absent.
 
 ## The rate parameter
 
-Rate effects sit outside everything above, and that is a scope choice rather than an
-oversight: any count-level quantity mixes how *often* actors decide with what they
-choose given the chance, and separating the two needs its own treatment. The rate
-parameter is best read as governing how quickly a dyad's situation can change, not
-where it ends up.
+Marginal effects for *rate effects themselves* sit outside everything above, and
+that is a scope choice rather than an oversight: the rate governs how often an
+actor is asked, which is a different kind of question from what the actor then
+does, and giving it a probability-scale contrast of its own needs its own
+treatment.
+
+What is not a scope choice, and is easy to miss, is that the rate is already
+inside one of the quantities above. A per-opportunity effect conditions on an
+opportunity having arisen, so it holds tempo fixed and reports the mechanism net
+of it. A period-level effect does not: how many chances a dyad gets is part of
+what determines where it ends up, so tempo and choice are combined in the number
+by construction. That is precisely why the period-level effect can be compared
+across networks whose actors decide at different frequencies — and precisely why
+it should not be read as a statement about preferences alone.
+
+Which you want therefore depends on whether the tempo of a setting is part of
+what you are comparing or something you would rather hold constant. Neither
+answer is more correct in general, and a comparison is clearer if it says which
+it has chosen. Where tempo differs a great deal between the networks being
+compared — and in the classes studied here it differs more than anything else —
+the choice does real work rather than none.
 
 ## Further reading
 

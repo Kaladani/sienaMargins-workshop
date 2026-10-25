@@ -10,8 +10,8 @@
 #   Rscript scripts/Postestimation.R
 #
 # What gets run is set in the config block below, and can be overridden from
-# the shell -- see there.  Static is seconds per model; dynamic and accumulated
-# are minutes.
+# the shell -- see there.  Static is seconds per model; the two simulated
+# estimands are minutes.
 ##############################################
 
 ## ---------------------------------------------------------------------------
@@ -33,21 +33,25 @@ library(RSiena)
 ## script prints on startup against what you asked for:
 ##
 ##   MODELS  ESTIMANDS  CONDITIONINGS  DESC_ESTIMANDS   comma-separated lists
-##   RUN_STATIC  RUN_DYNAMIC  RUN_ACCUMULATED           drop one estimand
+##   RUN_STATIC  RUN_DYNAMIC  RUN_ENDPOINT              drop one estimand
 ##   RUN_BYDENSITY  RUN_DESCRIPTIVE                     TRUE/FALSE
 ##
 ## Every combination of an ESTIMAND and a CONDITIONING is run for every model
 ## in MODELS, so the cost is roughly (models x estimands x conditionings).
-## Static is seconds; dynamic and accumulated are minutes per model.
+## Static is seconds; the simulated estimands are minutes per model.
 ## ---------------------------------------------------------------------------
 
 ## Which models.  "0".."5", or a subset.
 MODELS <- c("0", "1", "2", "3", "4", "5")
 
-## Which estimands.  static = observed waves; dynamic = simulated chains;
-## accumulated = summed over the ministeps of a chain (per period, not per
-## opportunity).
-ESTIMANDS <- c("static", "dynamic", "accumulated")
+## Which estimands.  The first two are per decision opportunity and differ in
+## where they are evaluated; the third is per period.
+##
+##   static    at the observed waves
+##   dynamic   along the ministeps of simulated chains
+##   endpoint  the contrast held for a whole period, the tie probability
+##             followed along the chain, and the two ends differenced
+ESTIMANDS <- c("static", "dynamic", "endpoint")
 
 ## Which conditionings.  Each entry is a name and the change statistic(s) to
 ## stratify by; NULL means no stratification.  "bydensity" splits tie CREATION
@@ -56,6 +60,16 @@ CONDITIONINGS <- list(
     pooled    = NULL,
     bydensity = "density"
 )
+
+## The same split, named in whichever vocabulary the estimand has.  Per
+## ministep it is the density change statistic: +1 when the decision is whether
+## to create a tie, -1 when it is whether to maintain one.  A period has no one
+## ministep to read that off, so it uses the tie's state at the period's start:
+## 0 began untied, 1 began tied.
+cond_for <- function(estimand, condition) {
+    if (is.null(condition) || estimand != "endpoint") return(condition)
+    ifelse(condition == "density", "pi0", condition)
+}
 
 ## Model-implied descriptives (the last section): the same comparisons as the
 ## marginal effects, but WITHOUT holding the rest of the decision fixed.  Set
@@ -82,7 +96,7 @@ set.seed(42)
 
 MODELS    <- .env_chr("MODELS", MODELS)
 ESTIMANDS <- .env_chr("ESTIMANDS", ESTIMANDS)
-for (nm in c("static", "dynamic", "accumulated"))
+for (nm in c("static", "dynamic", "endpoint"))
     if (!.env_lgl(paste0("RUN_", toupper(nm)), TRUE))
         ESTIMANDS <- setdiff(ESTIMANDS, nm)
 CONDITIONINGS <- CONDITIONINGS[.env_chr("CONDITIONINGS", names(CONDITIONINGS))]
@@ -107,8 +121,10 @@ thedata      <- estimation$thedata
 alg_controls <- estimation$alg_controls
 selection    <- estimation$selection
 ## Downstream keys these by bare model number; the file names them model_N.
-models <- setNames(estimation$results[paste0("model_", 0:5)], as.character(0:5))
-effs   <- setNames(estimation$models [paste0("model_", 0:5)], as.character(0:5))
+## Note the file's own names run the other way round -- `results` holds the
+## fits and `models` the specifications -- so they are renamed here.
+FITS <- setNames(estimation$results[paste0("model_", 0:5)], as.character(0:5))
+EFFS <- setNames(estimation$models [paste0("model_", 0:5)], as.character(0:5))
 
 # TARGETS ---------------------------------------------------------------------
 #
@@ -127,11 +143,11 @@ effs   <- setNames(estimation$models [paste0("model_", 0:5)], as.character(0:5))
 DEP_ENDO <- unspInt  ~ recip:transTrip1
 DEP_EXO  <- egoXaltX ~ egoX:altX
 
-mk_base <- function(fit, effects, dynamic, accumulated, deps, condition = NULL,
+mk_base <- function(fit, effects, dynamic, scope, deps, condition = NULL,
                     level = "period")
     make_marginal_targets(fit, effects = effects, depvar = NULL,
-                         type = "tieProb", level = level,
-                         dynamic = dynamic, accumulated = accumulated,
+                         type = "tieProb", level = level, scope = scope,
+                         dynamic = dynamic,
                          condition = condition,
                          dependencies = deps,
                          includeDefaults = FALSE)
@@ -199,11 +215,12 @@ MODEL_SPEC <- list(
 # RUNNER ----------------------------------------------------------------------
 
 run_block <- function(model, estimand, condition = NULL) {
-    spec        <- MODEL_SPEC[[model]]
-    fits        <- FITS[[model]]
-    effs        <- EFFS[[model]]
-    dynamic     <- estimand %in% c("dynamic", "accumulated")
-    accumulated <- estimand == "accumulated"
+    spec    <- MODEL_SPEC[[model]]
+    fits    <- FITS[[model]]
+    effs    <- EFFS[[model]]
+    ## Both simulated estimands need chains; only the endpoint is period-level.
+    dynamic <- estimand %in% c("dynamic", "endpoint")
+    scope   <- if (estimand == "endpoint") "period" else "ministep"
     unc <- set_postest_uncertainty_saom(mode = if (dynamic) "deltaFull" else "delta")
     out <- set_postest_output_saom(combineSameLevel = FALSE)
 
@@ -219,7 +236,7 @@ run_block <- function(model, estimand, condition = NULL) {
         else
             set_postest_algo_saom(verbose = FALSE)
 
-        tg <- spec$build(mk_base(fits[[i]], effs[[i]], dynamic, accumulated,
+        tg <- spec$build(mk_base(fits[[i]], effs[[i]], dynamic, scope,
                                  spec$deps, condition))
         r  <- marginalEffects(fits[[i]], data = thedata[[i]], targets = tg,
                               control_uncertainty = unc, control_algo = algo,
@@ -251,14 +268,26 @@ run_block <- function(model, estimand, condition = NULL) {
 ## carry it as `stratum` so every run has the same columns whether it was
 ## conditioned or not.
 get_any_effect <- function(target, effect_name, class_id, condition) {
-    est_col <- if (grepl("_sd$", effect_name)) "secondDiff" else "firstDiff"
+    ## A period-level result names its estimate periodFirstDiff rather than
+    ## firstDiff; take whichever of the two is there.
+    cands   <- if (grepl("_sd$", effect_name)) c("secondDiff", "periodSecondDiff")
+               else                            c("firstDiff",  "periodFirstDiff")
+    est_col <- cands[cands %in% names(target)]
+    if (length(est_col) != 1L)
+        stop("no estimate column for '", effect_name, "' in: ",
+             paste(names(target), collapse = ", "), call. = FALSE)
     stratum <- if (is.null(condition)) NA_real_ else {
-        col <- grep(paste0("_", condition, "$"), names(target), value = TRUE)[1L]
+        ## Change statistics arrive qualified (friendship_density); pi0 is a
+        ## column of the period-level result and stands on its own.
+        col <- c(grep(paste0("_", condition, "$"), names(target), value = TRUE),
+                 intersect(condition, names(target)))[1L]
         if (is.na(col))
             stop("conditioned on '", condition, "' but no matching column in ",
                  "the result for '", effect_name, "': ",
                  paste(names(target), collapse = ", "), call. = FALSE)
-        target[[col]]
+        ## Put both splits on one convention, positive = creation.  That is how
+        ## the density statistic is already coded; pi0 runs the other way.
+        if (identical(col, "pi0")) 1 - 2 * target[[col]] else target[[col]]
     }
     data.frame(class_id = class_id,
                effect   = effect_name,
@@ -302,7 +331,7 @@ dir.create(PARTS, showWarnings = FALSE, recursive = TRUE)
 
 for (estimand in ESTIMANDS) {
     for (cond_label in names(CONDITIONINGS)) {
-        condition <- CONDITIONINGS[[cond_label]]
+        condition <- cond_for(estimand, CONDITIONINGS[[cond_label]])
         cat(sprintf("\n=== %s / %s ===\n", toupper(estimand), cond_label))
         blocks <- setNames(lapply(MODELS, run_block, estimand = estimand,
                                   condition = condition),

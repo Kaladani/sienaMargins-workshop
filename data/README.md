@@ -17,6 +17,22 @@ The pupil questionnaire is available from the same place:
 <https://steglich.gmw.rug.nl/workshops/QuestionnairePupilsWaveV-1.pdf>.
 Nothing in the code reads it, but it documents the instrument the data come from.
 
+The **codebook** (Knecht 2006, ICS-Codebook no. 61) may also sit here as
+`CodebookNetworksAndActorAttributesInEarlyAdolescence.pdf`. Like everything
+else in this directory it is gitignored, and no code reads it, but it is what
+settles questions about the data's own definitions. Two that have come up:
+
+- `schoolnr` is documented as "Identifier of school (number) and class
+  (letter)", which is why the first two characters of a class id are the school
+  and the letter is the classroom. 126 classes in 14 schools.
+- `edulevel`, the educational track of the class (1 = LWOO to 9 = VWO), is a
+  CLASS-level variable and was the main criterion by which classes were
+  selected into the study. It lives in `TeacherWaveV.sav`, which is **not**
+  among the three `.RData` files above -- so nothing here can condition on it.
+  The same goes for the school-level features the sampling design varies
+  (public/private, rural/urban, region): documented in the codebook, absent
+  from the data we read.
+
 ## Getting them
 
 They are hosted alongside the other workshop material:

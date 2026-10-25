@@ -48,7 +48,7 @@ RES  <- "results"   # .rds produced by estimation / postestimation
 OUTD <- "output"    # tables and plots produced by meta_analysis.R
 
 files <- c(file.path(OUTD, c("table_raw_meta.csv", "table_static_meta.csv",
-                             "table_accumulated_meta.csv",
+                             "table_endpoint_meta.csv",
                              "table_context_meta.csv")),
            file.path(RES,  c("postest_all_df.rds", "estimation_results.rds")))
 have <- all(file.exists(files))
@@ -96,14 +96,27 @@ The walkthrough on single networks ends with **average marginal effects**: first
 differences in the probability of a tie, averaged over decision situations. Those
 are per-opportunity quantities — they describe one ministep.
 
+This chapter also uses the fourth rung of Chapter 2's ladder, so it is worth
+saying plainly what it is. A **period-level effect** asks a different question
+from an AME. Instead of averaging a contrast over single decisions, it holds the
+contrast in place for the whole period — reciprocated throughout, say, against
+unreciprocated throughout — follows the dyad's probability of being tied along
+the sequence of decisions the model implies, and takes the difference between the
+two probabilities that remain at the end. It is still a difference between two
+probabilities, so it is bounded and reads like one; what changes is that it
+refers to a period rather than to a decision. Chapter 6 says what it does and
+does not support.
+
 Here is the AME for reciprocity across the 17 classes, next to the coefficient it
-came from and to the accumulated effect introduced below:
+came from and that period-level effect:
 
 - the **estimated coefficient**, as reported by `siena07`;
 - the **average marginal effect (AME)**, the first difference in the probability
-  of a tie averaged over decision situations — one ministep;
-- the **accumulated effect**, the same contrast summed along the model-implied
-  ministep sequence, so it refers to a whole period.
+  of a tie averaged over decision situations — one ministep. Chapter 2 gave two
+  versions of this average, and the one used throughout this chapter is the
+  first: evaluated **at the observed waves**, not along simulated sequences;
+- the **period-level effect**, the same contrast held for a whole period and read
+  off at its end, so it refers to a period rather than to one decision.
 
 ```{r meta-scales}
 #| eval: !expr have
@@ -116,8 +129,8 @@ sc <- Reduce(function(x, y) merge(x, y, by = "model"),
                      "coefficient"),
                   one("table_static_meta.csv", "recip_fd",
                       "AME"),
-                  one("table_accumulated_meta.csv", "recip_fd",
-                      "accumulated")))
+                  one("table_endpoint_meta.csv", "recip_fd",
+                      "per period")))
 sc <- sc[sc$model %in% KEEP, ]
 sc[, -1] <- round(sc[, -1], 3)
 rownames(sc) <- NULL
@@ -131,10 +144,16 @@ counterparts need not move together, and none of the three is adjusted for
 whatever its own specification leaves out.
 
 What they are differs. The coefficient is a difference in log-odds within a choice
-set. The AME is a probability change per decision opportunity, averaged over
-ministeps that are not themselves observed. The accumulated effect refers to a
-whole period, but on a cumulative count scale rather than a probability one —
-Chapter 6 sets out what that scale does and does not support.
+set. The AME is a probability change per decision opportunity, averaged over the
+potential next ministeps at each **observed** wave — the first of the two averages
+Chapter 2 sets out. Averaging instead along the model's own simulated sequences
+(`dynamic = TRUE`) is the second, and it is computed for every class and model
+here too. The two track each other closely in these data — they order the classes
+almost identically, and the typical difference between them is a few percent — so
+nothing below would change if the other were used. The period-level effect is also a
+probability difference, but it refers to a whole period rather than to one decision:
+the chance the tie is there at the end of the period under one condition, against
+the chance under the other.
 
 What the probability scale does not fix on its own is the size of the choice set.
 These classes run from 22 to 33 pupils, so the number of alternatives an actor
@@ -144,7 +163,7 @@ geometry, so a per-opportunity probability of a given size does not mean quite t
 same thing in a class of 22 as in one of 33. Moving off the coefficient scale buys
 a common unit, not automatically a common baseline.
 
-## Why the accumulated effect compares better across rates
+## Why the period-level effect compares better across rates
 
 The AME answers "how much per decision". It does not say how much happens over a
 period, because it does not know how often actors decide — and they do not all
@@ -159,10 +178,10 @@ pick <- function(d, ...) { x <- subset(d, ...); x[, c("class_id", "est")] }
 rt <- pick(raw, effect == "friendship_rate1" & model == "model_2")
 so <- pick(p, estimand == "static" & condition == "pooled" &
               model == "model_2" & effect == "recip_fd")
-pp <- pick(p, estimand == "accumulated" & condition == "pooled" &
+pp <- pick(p, estimand == "endpoint" & condition == "pooled" &
               model == "model_2" & effect == "recip_fd")
 names(rt)[2] <- "opportunities"; names(so)[2] <- "AME"
-names(pp)[2] <- "accumulated"
+names(pp)[2] <- "per_period"
 
 cl <- merge(merge(rt, so), pp)
 round(range(cl$opportunities), 2)
@@ -174,36 +193,35 @@ over a period. Two classes make the point:
 ```{r meta-reorder}
 #| eval: !expr have
 cl <- cl[order(cl$AME), ]
-cl[cl$class_id %in% c("12c", "02f"), ]
+cl[cl$class_id %in% c("12c", "12f"), ]
 ```
 
-Class `12c` has roughly three times the reciprocity effect *per decision* of
-class `02f`, yet **less** total movement over the period — because its actors
-get about a third as many opportunities. On the per-opportunity scale `12c`
-looks like the stronger case; on the period scale it is the weaker one.
+Class `12c` has well over twice the reciprocity effect *per decision* of class
+`12f`, and yet reciprocity does **more** there over a period — because `12f`'s
+actors get around three times as many opportunities to act on it. On the
+per-opportunity scale `12c` is the stronger case; on the period scale it is the
+weaker one.
 
 Across all 17 classes the two scales rank the classes differently:
 
 ```{r meta-rank}
 #| eval: !expr have
-c(rank_correlation = round(cor(cl$AME, cl$accumulated,
+c(rank_correlation = round(cor(cl$AME, cl$per_period,
                                method = "spearman"), 2),
-  classes_that_change_rank = sum(rank(cl$AME) != rank(cl$accumulated)))
+  classes_that_change_rank = sum(rank(cl$AME) != rank(cl$per_period)))
 ```
 
-This is the specific sense in which the accumulated effect compares better: it
+This is the specific sense in which the period-level effect compares better: it
 carries the rate, so it says what a mechanism does in a setting rather than what it
 does per opportunity. Two networks running at different tempos can have identical
 AMEs and quite different consequences over a period.
 
-The price is interpretability. The accumulated effect is a sum, so it grows with
-the number of opportunities and is not bounded the way a proportion is — a count of
-extra ties created and dissolutions avoided rather than a probability. That makes
-ratios between specifications readable and levels on their own much less so, and it
-means the number should not be set against a between-wave difference in tie
-proportions. Chapter 6 takes up those limits; the point here is only that when
-opportunity rates differ, this is the scale on which the comparison can be made at
-all.
+That the two scales disagree is not a defect of either. They answer different
+questions, and which you want depends on whether the tempo of a setting is part of
+what you are comparing or something you would rather hold constant. Ask how
+reciprocity *works* in two classrooms and the per-opportunity effect is the honest
+comparison; ask what reciprocity *does* in them over a term and it is the
+period-level one.
 
 ## Does the choice of scale change the picture?
 
@@ -232,23 +250,23 @@ ranks <- do.call(rbind, lapply(seq_len(nrow(eff_map)), function(i) {
   r <- g(raw, effect == eff_map$coefn[i] & model == "model_2")
   s <- g(p, estimand == "static" & condition == "pooled" &
             effect == eff_map$key[i] & model == "model_2")
-  a <- g(p, estimand == "accumulated" & condition == "pooled" &
+  a <- g(p, estimand == "endpoint" & condition == "pooled" &
             effect == eff_map$key[i] & model == "model_2")
-  names(r)[2] <- "coef"; names(s)[2] <- "ame"; names(a)[2] <- "acc"
+  names(r)[2] <- "coef"; names(s)[2] <- "ame"; names(a)[2] <- "per_period"
   m <- merge(merge(r, s), a)
   rbind(
     data.frame(effect = eff_map$label[i], step = "coefficient → AME",
                x = rank(m$coef), y = rank(m$ame)),
-    data.frame(effect = eff_map$label[i], step = "AME → accumulated",
-               x = rank(m$ame),  y = rank(m$acc)))
+    data.frame(effect = eff_map$label[i], step = "AME → per period",
+               x = rank(m$ame),  y = rank(m$per_period)))
 }))
 
 ## Explicit level order for both facet dimensions.  Without this, facet_grid
-## sorts alphabetically and puts "AME -> accumulated" above "coefficient ->
+## sorts alphabetically and puts "AME -> per period" above "coefficient ->
 ## AME", which is the reverse of the order the text reads them in.
 ranks$step   <- factor(ranks$step,
                        levels = c("coefficient → AME",
-                                  "AME → accumulated"))
+                                  "AME → per period"))
 ranks$effect <- factor(ranks$effect, levels = eff_map$label)
 
 ggplot(ranks, aes(x, y)) +
@@ -284,7 +302,7 @@ leaves the classes in almost the same order for reciprocity and for the
 primary-school effect: whatever the coefficient told you about which class has the
 strongest effect, the probability tells you too. Transitivity is the exception.
 
-**Bottom row — AME to accumulated.** This is the step just made, and here the
+**Bottom row — AME to per period.** This is the step just made, and here the
 classes do reorder, because the question changes from what a mechanism does per
 decision to what it does over a period.
 
@@ -341,25 +359,25 @@ move off the coefficient scale.
 With the scale settled, a substantive question. Do reciprocity and transitivity
 reinforce each other, or substitute for one another? That is a **second
 difference** — how much the effect of one more two-path changes when a tie goes
-from unreciprocated to reciprocated — and everything below is on the accumulated
+from unreciprocated to reciprocated — and everything below is on the period
 scale.
 
 Start with it as it would normally be reported: one estimate per specification,
-averaged over every ministep of the period.
+for the period as a whole.
 
 ```{r int-pooled}
 #| eval: !expr have
 #| fig-width: 7
 #| fig-height: 2.2
-pool <- get("table_accumulated_meta.csv")
+pool <- get("table_endpoint_meta.csv")
 pool <- pool[pool$effect == "interaction_sd" & pool$model %in% KEEP,
              c("model", "est", "ci_low", "ci_high")]
 
 ggplot(pool, aes(est, model, xmin = ci_low, xmax = ci_high)) +
   geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50") +
   geom_pointrange(colour = "grey25") +
-  labs(x = "accumulated interaction over a period", y = NULL,
-       title = "Pooled over all ministeps")
+  labs(x = "interaction over a period", y = NULL,
+       title = "Pooled over the whole period")
 ```
 
 Small, negative, and easy to pass over. Reciprocity and transitivity look like
@@ -373,7 +391,7 @@ same axis:
 #| fig-width: 7
 #| fig-height: 3
 ctx <- get("table_context_meta.csv")
-ctx <- ctx[ctx$effect == "interaction_sd" & ctx$estimand == "accumulated" &
+ctx <- ctx[ctx$effect == "interaction_sd" & ctx$estimand == "endpoint" &
            ctx$model %in% KEEP,
            c("model", "context", "est", "ci_low", "ci_high")]
 
@@ -388,7 +406,7 @@ ggplot(both, aes(est, model, xmin = ci_low, xmax = ci_high, colour = context)) +
   scale_colour_manual(values = c(pooled = "grey25",
                                  creation = "#2166ac",
                                  maintenance = "#d73027")) +
-  labs(x = "accumulated interaction over a period", y = NULL, colour = NULL,
+  labs(x = "interaction over a period", y = NULL, colour = NULL,
        title = "Split by the kind of decision")
 ```
 
@@ -412,7 +430,7 @@ meta-analytic summary at the bottom:
 #| fig-width: 9
 #| fig-height: 6.5
 per <- readRDS(file.path(RES, "postest_all_df.rds"))
-per <- per[per$estimand == "accumulated" & per$condition == "bydensity" &
+per <- per[per$estimand == "endpoint" & per$condition == "bydensity" &
            per$effect == "interaction_sd" & per$model %in% KEEP &
            per$stratum != 0, ]
 per$context  <- ifelse(per$stratum > 0, "creation", "maintenance")
@@ -437,9 +455,10 @@ ggplot(fig, aes(est, class_id, xmin = ci_low, xmax = ci_high, colour = context,
   scale_colour_manual(values = c(creation = "#2166ac",
                                  maintenance = "#d73027")) +
   scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 18), guide = "none") +
-  ## a few single-class intervals run past +/- 3; clipped so the rest is legible
-  coord_cartesian(xlim = c(-2.5, 1)) +
-  labs(x = "accumulated second difference over a period", y = NULL,
+  ## a handful of single-class intervals run far wider than the rest; clipped so
+  ## the bulk stays legible
+  coord_cartesian(xlim = c(-0.8, 0.4)) +
+  labs(x = "second difference over a period", y = NULL,
        colour = NULL)
 ```
 
@@ -465,13 +484,14 @@ Chapter 4, which is the same arc at a size that can be copied.
 
 ## In short
 
-- The coefficient, the AME and the accumulated effect agree here on direction and
+- The coefficient, the AME and the period-level effect agree here on direction and
   respond similarly to the specification — an observation about these data rather
   than something to rely on in general.
-- Only the accumulated effect carries the rate, which is what lets it be compared
-  between settings whose actors decide at different frequencies. It is a
-  cumulative count rather than a probability, so it is read through ratios rather
-  than as a between-wave difference.
+- Only the period-level effect carries the rate, which is what lets it be compared
+  between settings whose actors decide at different frequencies. It remains a
+  difference between two probabilities, so it can also be read against the
+  observed between-wave difference in tie proportions — which the per-opportunity
+  effect cannot.
 - Splitting by kind of decision changes the substantive conclusion rather than
   refining it: the reciprocity × transitivity second difference is absent in tie
   creation and large in tie maintenance.

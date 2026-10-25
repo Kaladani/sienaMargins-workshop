@@ -20,6 +20,20 @@ specifications.
 Chapter 6 says which parts are settled and which are current work — worth reading
 before relying on any of it in a paper.
 
+::: {.callout-note collapse="true"}
+## If you saw an earlier version of this material
+The quantity reported for a whole period has changed. Earlier versions summed the
+per-decision effect along the model's implied sequence of decisions, which gave a
+count rather than a probability. What is reported now is the **period-level tie
+probability contrast**: the chance the tie is present at the end of the period
+under one condition against the other. It is a difference between two
+probabilities, so it is bounded, and it can be set beside the observed difference
+in tie proportions between waves — which the earlier quantity could not.
+
+Nothing about the per-decision quantities has changed. The page date above shows
+when this version was built.
+:::
+
 ## How to use the code chapters
 
 Chapters 3 to 5 are ordinary `.qmd` files and work on their own — open any of them

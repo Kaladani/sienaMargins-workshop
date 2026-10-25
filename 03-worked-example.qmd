@@ -481,11 +481,14 @@ The Step 1 descriptive difference is **period-level**: it compares two waves.
 The AME is **per-opportunity**: it refers to one ministep. They are not on the
 same footing, so the difference between them is not interpretable.
 
-Summing the contrast along the ministeps the model implies between one wave and
-the next does give a period-level quantity — the **accumulated effect** — but it
-is a cumulative count rather than a probability, so it does not simply close the
-gap either. Chapter 6 sets out what it does and does not support. For now, treat
-Step 1 as an anchor for intuition rather than as a number to subtract from.
+To put them side by side you need a model-implied quantity on the same footing as
+Step 1 — a probability that a tie is present at the *end* of a period, not a
+change at one decision. That quantity exists: hold the contrast for the whole
+period and difference the two endpoints. Because it is a difference of two
+probabilities it is bounded, and it can be set directly against the Step 1 number.
+Chapter 5 reports it across 17 classes and Chapter 6 says what it does and does not
+support. Until then, treat Step 1 as an anchor for intuition rather than as a
+number to subtract from.
 :::
 
 Everything above is evaluated at the **observed** waves. The model can instead

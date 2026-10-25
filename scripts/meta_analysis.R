@@ -58,7 +58,7 @@ calculate_meta <- function(df_long) {
               rma(yi = sub_df$est, sei = sub_df$se, method = "DL"))
       data.frame(est = m$b[1, 1], se = m$se, ci_low = m$ci.lb, ci_high = m$ci.ub,
                  effect = eff, model = mod, class_id = "Summary",
-                 pval = m$pval, tau2 = m$tau2, QEp = m$QEp, k = m$k,
+                 pval = m$pval, tau2 = m$tau2, I2 = m$I2, QEp = m$QEp, k = m$k,
                  method = m$method,
                  stringsAsFactors = FALSE)
     }))
@@ -111,7 +111,12 @@ plot_meta <- function(df_long, meta_results, plot_title, file_suffix) {
 
 # RUN -------------------------------------------------------------------------
 
-ESTIMANDS <- intersect(c("static", "dynamic", "accumulated"),
+## Whichever estimands Postestimation.R actually ran, in reporting order:
+## per-opportunity first, then the period-level one.
+##
+## The intersect() is what makes a partial run work: pool whatever is in the
+## frame, in this order, rather than failing on an estimand that was not run.
+ESTIMANDS <- intersect(c("static", "dynamic", "endpoint"),
                        unique(postest_all$estimand))
 
 ## `postest_all` holds each estimand twice -- pooled over all ministeps and
@@ -173,6 +178,21 @@ sub_plot(raw_df, metas$raw, "rate", FALSE, "Rate Only", "raw_rate_only")
 # deciding whether to MAINTAIN one.  Those are different decisions and often
 # have different answers, so a pooled average over both is an average over two
 # populations.  Everything above is repeated here split that way.
+#
+# The period-level estimand has no ministep to read density off, so it is split
+# by the tie's state at the START of the period instead; Postestimation.R codes
+# that to the same convention (positive = creation), so the same two lines
+# below cover every estimand.
+#
+# The facets below put the two side by side, and they partition different
+# things.  The period-level split is the observable one: it assigns each DYAD
+# to a stratum by the state it was observed in at t1, which is exactly how the
+# descriptive differences are defined and how the fitted targets are read off.
+# The density split assigns DECISIONS, nearly all of them at interim states
+# that are never observed, and a dyad can appear in both of its strata within
+# one period.  Read "creation" as "the decision was whether to create" in the
+# per-ministep columns, and as "the dyad started the period untied" in the
+# period-level one -- where it lines up with the observed descriptive.
 
 by_density <- subset(postest_all, condition == "bydensity" & stratum != 0)
 by_density$context <- factor(ifelse(by_density$stratum > 0,
@@ -199,10 +219,10 @@ if (!is.null(meta_context) && nrow(meta_context)) {
   ## effect: whether creation and maintenance differ, and whether that survives
   ## controlling for more, are both read ACROSS models.
   ##
-  ## Estimand goes in the columns so each one gets its own estimate scale.
-  ## Accumulated sums over the ministeps of a period and is an order of
-  ## magnitude larger than the per-opportunity estimands; on a shared scale it
-  ## would flatten static and dynamic onto the zero line.
+  ## Estimand goes in the columns so each one gets its own estimate scale.  A
+  ## period-level estimand is far larger than a per-opportunity one -- a period
+  ## is many opportunities -- so on a shared scale it would flatten static and
+  ## dynamic onto the zero line.
   meta_context$model <- factor(meta_context$model, levels = MODEL_LEVELS)
 
   p_ctx <- ggplot(meta_context,
@@ -474,8 +494,15 @@ if (file.exists(descr_file)) {
 # scripts/descriptives.R computes, per class, the difference in tie proportions at
 # t2 between dyads where a t1 condition holds and dyads where it does not.  It
 # needs no model and confounds every mechanism at once.  Pooled here with the
-# same estimator, it is the uncontrolled version of the same comparison, on the
-# same probability scale as the accumulated marginal effect.
+# same estimator, it is the uncontrolled version of the same comparison.
+#
+# THIS IS THE COMPARISON THE PERIOD-LEVEL ESTIMAND WAS INTRODUCED FOR.  The
+# observed quantity is a difference of two tie proportions one period apart,
+# bounded in [-1, 1].  The `endpoint` marginal effect is a difference of two
+# period-level tie probabilities, so it is the same kind of number under a
+# counterfactual: the two can be put beside each other and the gap read as the
+# part of the observed association that is not the mechanism.  A per-opportunity
+# effect supports no such reading, because nothing observable is per-decision.
 #
 # The descriptive carries no standard error -- dyads within a class are not
 # independent -- so it is summarised as the mean across classes with its range.
@@ -507,26 +534,37 @@ if (file.exists(desc_file)) {
                adjusted = m$est, adjusted_se = m$se, stringsAsFactors = FALSE)
   }))
 
-  ## NO RATIO COLUMN, deliberately.  The accumulated effect is a SUM over the
-  ## ministeps of a period and is very nearly lambda times the per-opportunity
-  ## effect (verified at ~1% in this model), so accumulated / descriptive
-  ## mostly measures the rate parameter.  The descriptive is a difference of
-  ## two proportions, bounded in [-1, 1]; the accumulated is a cumulative
-  ## score with no such bound.  Dividing one by the other does not yield a
-  ## "share of the raw association explained", and reporting it as though it
-  ## did invites exactly that reading.
+  ## NO RATIO COLUMN, deliberately -- even for the endpoint rows, where both
+  ## numbers are bounded differences of probabilities and a ratio would at
+  ## least be dimensionless.  Either number can cross zero, so the ratio is not
+  ## a "share of the raw association explained" and is unstable wherever the
+  ## denominator is small.  The DIFFERENCE is the quantity that means
+  ## something; the two are on one scale, which is the whole point.
+  ##
+  ## For the per-opportunity rows a ratio would be worse still: they are
+  ## per-decision quantities compared against a per-period observation, and
+  ## their ratio to it mostly measures the rate.
   comparison <- merge(adjusted, meta_desc, by = "effect")
   comparison <- comparison[order(comparison$effect, comparison$model,
                                  comparison$estimand), ]
+  comparison$gap <- ifelse(comparison$estimand %in% c("endpoint"),
+                           comparison$descriptive - comparison$adjusted,
+                           NA_real_)
   write.csv(comparison, file.path(OUT, "table_descriptive_vs_adjusted.csv"),
             row.names = FALSE)
   cat("\n--- uncontrolled vs adjusted (model_2) ---\n")
-  show <- subset(comparison, estimand == "accumulated" & model == "model_2")
+  ## Only a period-level estimand is comparable with a wave-to-wave
+  ## observation, and the endpoint contrast is on the observation's own scale.
+  PERIOD_ESTIMANDS <- intersect("endpoint", ESTIMANDS)
+  show <- if (length(PERIOD_ESTIMANDS))
+      subset(comparison, estimand == PERIOD_ESTIMANDS[1L] & model == "model_2")
+  else comparison[0, ]
   if (!nrow(show)) {
     show <- subset(comparison, model == "model_2")
-    cat("  NOTE: accumulated results not available; showing ",
+    cat("  NOTE: no period-level results available; showing ",
         paste(unique(show$estimand), collapse = "/"),
-        ", which is per decision opportunity rather than per period.\n", sep = "")
+        ", which is per decision opportunity rather than per period, so the\n",
+        "  two columns below are not on one scale.\n", sep = "")
   }
   if (nrow(show)) for (i in seq_len(nrow(show))) with(show[i, ],
       cat(sprintf("  %-22s %-28s descriptive %+.3f [%+.3f,%+.3f]   %-11s %+.3f\n",

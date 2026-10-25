@@ -300,7 +300,7 @@ an interpretable summary efefct size means climbing a ladder, and each rung is a
 flowchart LR
   A["<b>dyad</b><br/>one alternative"] -->|"average over<br/>alters"| B["<b>actor</b><br/>one decision situation"]
   B -->|"average over<br/>decision situations"| C["<b>effect size</b><br/>AME"]
-  C -->|"accumulate<br/>over a period"| D["<b>period</b>"]
+  C -->|"carry through<br/>a whole period"| D["<b>period</b>"]
 ```
 
 The third rung comes in two versions, and choosing between them is the
@@ -323,5 +323,6 @@ and saying so when they agree.
 One dimension is independent of this ladder: the
 margin. Creation, maintenance, and joined tie-presence are available at every rung.
 
-The fourth rung, accumulating to a whole period, is a different kind of object and
-is taken up in Chapter 6.
+The fourth rung, carrying the contrast through a whole period, is a different kind
+of object: it is no longer an average over decisions but a statement about where a
+dyad ends up. Chapter 6 takes it up.

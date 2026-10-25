@@ -20,7 +20,12 @@
 /data/*.RData
 /data/*.pdf
 
+# Internal planning notes (repo/publishing strategy, not workshop content).
+# Not secret, just not meant for readers of the book.
+/docs/
+
 # macOS
 .DS_Store
 **/.DS_Store
 .Rproj.user
+.Rhistory
