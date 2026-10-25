@@ -2,8 +2,9 @@
 
 This is the written version of the EUSN workshop *Interpreting Model Estimates:
 Marginal Effects in RSiena* (11 August 2026), extended so that it can be read on
-its own. It was updated for a a public lecture (26 October 2026) at the
-University of Hamburg to align with advancements on period-level effect sizes,
+its own. It was updated for a a [public lecture (26 October 2026) at the
+University of Hamburg](https://www.wiso.uni-hamburg.de/fachbereich-sowi/professuren/oberg/forschung/public-lecture-network-comparison.htm) 
+to align with advancements on period-level effect sizes,
 that are referred to in the lecture.
 
 It has two halves that do different jobs.
