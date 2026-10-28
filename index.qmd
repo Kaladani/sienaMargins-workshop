@@ -2,7 +2,7 @@
 
 This is the written version of the EUSN workshop *Interpreting Model Estimates:
 Marginal Effects in RSiena* (11 August 2026), extended so that it can be read on
-its own. It was updated for a a [public lecture (26 October 2026) at the
+its own. It was updated for a [public lecture (26 October 2026) at the
 University of Hamburg](https://www.wiso.uni-hamburg.de/fachbereich-sowi/professuren/oberg/forschung/public-lecture-network-comparison.htm) 
 to align with advancements on period-level effect sizes,
 that are referred to in the lecture.
@@ -92,6 +92,28 @@ pipeline: re-pool from `results/postest_all_df.rds` in seconds, recompute
 marginal effects from `results/estimation_results.rds` in minutes, or re-estimate
 from the raw data if you have the time and have fetched them.
 `scripts/README.md` has the run order and the cost of each stage.
+
+## How to cite
+
+This material is updated as the methods and the software change, so cite it with
+the date you consulted it. The page date shows when the version you are reading
+was built.
+
+> Gotthardt, Daniel, Christian Steglich, and Marijtje van Duijn. 2026.
+> *Interpreting Model Estimates: Marginal Effects in RSiena.*
+> <https://kaladani.github.io/sienaMargins-workshop/> (accessed DD Month YYYY).
+
+```bibtex
+@Misc{GotthardtSteglichvanDuijn2026,
+  Title  = {Interpreting Model Estimates: Marginal Effects in {RSiena}},
+  Author = {Daniel Gotthardt and Christian Steglich and Marijtje van Duijn},
+  Year   = {2026},
+  Note   = {Accessed DD Month YYYY},
+  url    = {https://kaladani.github.io/sienaMargins-workshop/}
+}
+```
+
+The written material is CC BY-NC-SA 4.0 and the code is MIT; see `LICENSE`.
 
 ## The workshop programme
 

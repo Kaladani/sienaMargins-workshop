@@ -21,5 +21,9 @@ Marijtje van Duijn (Groningen).
 **Data** are not included — see [`data/README.md`](data/README.md) for where to
 get them and on what terms.
 
+**How to cite** — the material is updated as the methods and the software change,
+so cite it with the date you consulted it; the suggested form and a BibTeX entry
+are in [How to cite](https://kaladani.github.io/sienaMargins-workshop/#how-to-cite).
+
 **Licence** — CC BY-NC-SA 4.0 for the written material, MIT for the code; see
 [`LICENSE`](LICENSE). Contributors: see [`CONTRIBUTING.md`](CONTRIBUTING.md).
