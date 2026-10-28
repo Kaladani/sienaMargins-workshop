@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Interpreting Model Estimates",
     "section": "",
-    "text": "About this material\nThis is the written version of the EUSN workshop Interpreting Model Estimates: Marginal Effects in RSiena (11 August 2026), extended so that it can be read on its own. It was updated for a a public lecture (26 October 2026) at the University of Hamburg to align with advancements on period-level effect sizes, that are referred to in the lecture.\nIt has two halves that do different jobs.\nChapters 1–2 are for reading. They set out why a SAOM coefficient is not an effect size, what a marginal effect is in general, and how the idea has to be adapted for a model whose decisions are unobserved. Few formulas, and the ones that appear are the ones you need to read the output later.\nChapters 3–5 are for running. They are executable documents, and they scale up: the worked example computes every quantity from Chapters 1–2 on the s50 data that ships with RSiena; Chapter 4 does the same across three school classes and pools the results; Chapter 5 does it for seventeen classes under six specifications.\nChapter 6 says which parts are settled and which are current work — worth reading before relying on any of it in a paper.",
+    "text": "About this material\nThis is the written version of the EUSN workshop Interpreting Model Estimates: Marginal Effects in RSiena (11 August 2026), extended so that it can be read on its own. It was updated for a public lecture (26 October 2026) at the University of Hamburg to align with advancements on period-level effect sizes, that are referred to in the lecture.\nIt has two halves that do different jobs.\nChapters 1–2 are for reading. They set out why a SAOM coefficient is not an effect size, what a marginal effect is in general, and how the idea has to be adapted for a model whose decisions are unobserved. Few formulas, and the ones that appear are the ones you need to read the output later.\nChapters 3–5 are for running. They are executable documents, and they scale up: the worked example computes every quantity from Chapters 1–2 on the s50 data that ships with RSiena; Chapter 4 does the same across three school classes and pools the results; Chapter 5 does it for seventeen classes under six specifications.\nChapter 6 says which parts are settled and which are current work — worth reading before relying on any of it in a paper.",
     "crumbs": [
       "About this material"
     ]
@@ -25,6 +25,16 @@
     "title": "Interpreting Model Estimates",
     "section": "What is in the repository",
     "text": "What is in the repository\n01, 02, 99  the reading chapters (99 is the closing outlook)\n03–05       the three executable chapters\ndata/       where the friendship data go — not included, see data/README.md\nscripts/    the meta-analysis pipeline, with its own README\nresults/    fitted models and per-class marginal effects (.rds)\noutput/     pooled tables and plots (.csv, .png)\nfigs/       figures used by the reading chapters\nThe empirical data are not distributed with this material — they belong to the study they come from. Chapter 4 and scripts/estimation.R fetch them on first use; data/README.md says where they come from and on what terms. Chapter 3 needs nothing extra, since it uses the s50 data that ships with RSiena.\nRun anything with the working directory set to the repository root — paths are relative to it. Opening it as an RStudio project does that for you.\nBecause every stage’s results are included, you can start at any point in the pipeline: re-pool from results/postest_all_df.rds in seconds, recompute marginal effects from results/estimation_results.rds in minutes, or re-estimate from the raw data if you have the time and have fetched them. scripts/README.md has the run order and the cost of each stage.",
+    "crumbs": [
+      "About this material"
+    ]
+  },
+  {
+    "objectID": "index.html#how-to-cite",
+    "href": "index.html#how-to-cite",
+    "title": "Interpreting Model Estimates",
+    "section": "How to cite",
+    "text": "How to cite\nThis material is updated as the methods and the software change, so cite it with the date you consulted it. The page date shows when the version you are reading was built.\n\nGotthardt, Daniel, Christian Steglich, and Marijtje van Duijn. 2026. Interpreting Model Estimates: Marginal Effects in RSiena. https://kaladani.github.io/sienaMargins-workshop/ (accessed DD Month YYYY).\n\n@Misc{GotthardtSteglichvanDuijn2026,\n  Title  = {Interpreting Model Estimates: Marginal Effects in {RSiena}},\n  Author = {Daniel Gotthardt and Christian Steglich and Marijtje van Duijn},\n  Year   = {2026},\n  Note   = {Accessed DD Month YYYY},\n  url    = {https://kaladani.github.io/sienaMargins-workshop/}\n}\nThe written material is CC BY-NC-SA 4.0 and the code is MIT; see LICENSE.",
     "crumbs": [
       "About this material"
     ]
